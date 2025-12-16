@@ -51,9 +51,14 @@ class ProfileController extends Controller
 
             $path = $request->file('avatar')->store('avatars', 'public');
             $validated['avatar'] = $path;
+            
+            \Log::info('Avatar uploaded successfully', ['path' => $path, 'user_id' => $user->id]);
         }
 
         $user->update($validated);
+        
+        // Refresh user instance to ensure session has latest data
+        $user->refresh();
 
         return back()->with('success', 'Profil berhasil diperbarui!');
     }

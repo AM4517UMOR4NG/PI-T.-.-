@@ -133,7 +133,7 @@ class MidtransController extends Controller
                 // Payment captured and verified (Credit Card)
                 $this->handleSuccessfulPayment($rental, $amount);
                 
-                Log::info('✅ Rental PAID - Status: sedang_disewa (capture)', [
+                Log::info('✅ Rental PAID - Status: menunggu_pengantaran (capture)', [
                     'rental_id' => $rental->id,
                     'paid_amount' => $amount
                 ]);
@@ -152,7 +152,7 @@ class MidtransController extends Controller
             // Payment settled (E-wallet, Bank Transfer, etc)
             $this->handleSuccessfulPayment($rental, $amount);
             
-            Log::info('✅ Rental PAID - Status: sedang_disewa (settlement)', [
+            Log::info('✅ Rental PAID - Status: menunggu_pengantaran (settlement)', [
                 'rental_id' => $rental->id,
                 'paid_amount' => $amount
             ]);
@@ -180,20 +180,18 @@ class MidtransController extends Controller
     protected function handleSuccessfulPayment(Rental $rental, $amount)
     {
         DB::transaction(function () use ($rental, $amount) {
-            // Update rental status
-            $rental->status = 'sedang_disewa';
+            // Update rental status to waiting for delivery
+            // Waktu sewa (start_at) akan diupdate ketika user konfirmasi penerimaan
+            $rental->status = 'menunggu_pengantaran';
             $rental->paid = $amount;
             $rental->save();
 
-            // Decrement stock here
+            // Decrement stock here (stok dikurangi setelah pembayaran sukses)
             foreach ($rental->items as $item) {
                 if ($item->rentable) {
                     $rentable = $item->rentable;
                     
                     // Lock for update to prevent race conditions
-                    // Note: In a high concurrency env, we should check if stock < 0 after decrement
-                    // But for now we follow the requirement "decrease on payment"
-                    
                     if ($rentable instanceof \App\Models\UnitPS) {
                         $rentable->stock -= $item->quantity;
                     } else {
@@ -203,6 +201,12 @@ class MidtransController extends Controller
                 }
             }
         });
+
+        Log::info('✅ Payment successful - Status: menunggu_pengantaran', [
+            'rental_id' => $rental->id,
+            'rental_kode' => $rental->kode,
+            'paid_amount' => $amount,
+        ]);
     }
 
     /**
