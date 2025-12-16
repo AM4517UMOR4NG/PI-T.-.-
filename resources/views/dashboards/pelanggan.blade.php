@@ -160,7 +160,7 @@
                         </div>
                         <div class="card-body d-flex flex-column">
                             <div class="text-center mb-3">
-                                <h5 class="card-title fw-bold mb-1">{{ $unit->name }}</h5>
+                                <h5 class="card-title fw-bold mb-1 text-brand-main">{{ $unit->name }}</h5>
                                 <p class="mb-1 text-muted" style="font-size: 1rem; font-weight: 500;">{{ $unit->brand }}</p>
                                 @php
                                     $stok = $unit->stock ?? 0;
@@ -174,25 +174,19 @@
                                         {{ __('dashboard.out_of_stock') }}
                                     </div>
                                 @endif
-                                <div class="fw-bold" style="color: #009432;">Rp {{ number_format($unit->price_per_hour, 0, ',', '.') }}<span class="small fw-normal" style="color: #009432;">{{ __('dashboard.per_hour') }}</span></div>
+                                <div class="fw-bold text-brand-main">Rp {{ number_format($unit->price_per_hour, 0, ',', '.') }}<span class="small fw-normal text-muted">{{ __('dashboard.per_hour') }}</span></div>
                             </div>
                             <div class="mt-auto">
                                 <div class="d-flex gap-2">
-                                    <button type="button" class="btn btn-sm btn-outline-secondary add-to-cart-btn"
+                                    <button type="button" class="btn btn-sm btn-outline-primary add-to-cart-btn"
                                         data-type="unitps"
                                         data-id="{{ $unit->id }}"
                                         data-name="{{ $unit->name }}"
                                         data-price="{{ $unit->price_per_hour }}"
-                                        data-price_type="per_jam"
-                                        style="padding: 0.375rem 0.75rem; color: #0652DD; border-color: #0652DD;"
-                                        onmouseover="this.style.backgroundColor='#0652DD'; this.style.color='white';"
-                                        onmouseout="this.style.backgroundColor=''; this.style.color='#0652DD';">
+                                        data-price_type="per_jam">
                                         <i class="bi bi-cart"></i>
                                     </button>
-                                    <a href="{{ route('pelanggan.rentals.create') }}?type=unitps&id={{ $unit->id }}" class="btn btn-sm btn-primary flex-grow-1"
-                                       style="background-color: #0652DD; border-color: #0652DD;"
-                                       onmouseover="this.style.backgroundColor='#032a8a'; this.style.borderColor='#032a8a';"
-                                       onmouseout="this.style.backgroundColor='#0652DD'; this.style.borderColor='#0652DD';">
+                                    <a href="{{ route('pelanggan.rentals.create') }}?type=unitps&id={{ $unit->id }}" class="btn btn-sm btn-primary flex-grow-1">
                                         {{ __('dashboard.rent') }}
                                     </a>
                                 </div>
@@ -245,7 +239,7 @@
                         </div>
                         <div class="card-body d-flex flex-column">
                             <div class="text-center mb-3">
-                                <h5 class="card-title fw-bold mb-1 text-truncate">{{ $game->judul }}</h5>
+                                <h5 class="card-title fw-bold mb-1 text-truncate text-brand-main">{{ $game->judul }}</h5>
                                 <p class="mb-1 text-muted" style="font-size: 1rem; font-weight: 500;">{{ $game->platform }} • {{ $game->genre }}</p>
                                 @php
                                     $stok = $game->stok ?? 0;
@@ -259,25 +253,19 @@
                                         {{ __('dashboard.out_of_stock') }}
                                     </div>
                                 @endif
-                                <div class="fw-bold" style="color: #009432;">Rp {{ number_format($game->harga_per_hari, 0, ',', '.') }}<span class="small fw-normal" style="color: #009432;">{{ __('dashboard.per_day') }}</span></div>
+                                <div class="fw-bold text-brand-main">Rp {{ number_format($game->harga_per_hari, 0, ',', '.') }}<span class="small fw-normal text-muted">{{ __('dashboard.per_day') }}</span></div>
                             </div>
                             <div class="mt-auto">
                                 <div class="d-flex gap-2">
-                                    <button type="button" class="btn btn-sm btn-outline-secondary add-to-cart-btn"
+                                    <button type="button" class="btn btn-sm btn-outline-primary add-to-cart-btn"
                                         data-type="game"
                                         data-id="{{ $game->id }}"
                                         data-name="{{ $game->judul }}"
                                         data-price="{{ $game->harga_per_hari }}"
-                                        data-price_type="per_hari"
-                                        style="padding: 0.375rem 0.75rem; color: #0652DD; border-color: #0652DD;"
-                                        onmouseover="this.style.backgroundColor='#0652DD'; this.style.color='white';"
-                                        onmouseout="this.style.backgroundColor=''; this.style.color='#0652DD';">
+                                        data-price_type="per_hari">
                                         <i class="bi bi-cart"></i>
                                     </button>
-                                    <a href="{{ route('pelanggan.rentals.create') }}?type=game&id={{ $game->id }}" class="btn btn-sm btn-primary flex-grow-1"
-                                       style="background-color: #0652DD; border-color: #0652DD;"
-                                       onmouseover="this.style.backgroundColor='#032a8a'; this.style.borderColor='#032a8a';"
-                                       onmouseout="this.style.backgroundColor='#0652DD'; this.style.borderColor='#0652DD';">
+                                    <a href="{{ route('pelanggan.rentals.create') }}?type=game&id={{ $game->id }}" class="btn btn-sm btn-primary flex-grow-1">
                                         {{ __('dashboard.rent') }}
                                     </a>
                                 </div>
@@ -339,7 +327,7 @@
                         </div>
                         <div class="card-body d-flex flex-column">
                             <div class="text-center mb-3">
-                                <h5 class="card-title fw-bold mb-1">{{ $acc->nama }}</h5>
+                                <h5 class="card-title fw-bold mb-1 text-brand-main">{{ $acc->nama }}</h5>
                                 <p class="mb-1 text-muted" style="font-size: 1rem; font-weight: 500;">{{ $acc->jenis }}</p>
                                 @php
                                     $stok = $acc->stok ?? 0;
@@ -353,25 +341,19 @@
                                         {{ __('dashboard.out_of_stock') }}
                                     </div>
                                 @endif
-                                <div class="fw-bold" style="color: #009432;">Rp {{ number_format($acc->harga_per_hari, 0, ',', '.') }}<span class="small fw-normal" style="color: #009432;">{{ __('dashboard.per_day') }}</span></div>
+                                <div class="fw-bold text-brand-main">Rp {{ number_format($acc->harga_per_hari, 0, ',', '.') }}<span class="small fw-normal text-muted">{{ __('dashboard.per_day') }}</span></div>
                             </div>
                             <div class="mt-auto">
                                 <div class="d-flex gap-2">
-                                    <button type="button" class="btn btn-sm btn-outline-secondary add-to-cart-btn"
+                                    <button type="button" class="btn btn-sm btn-outline-primary add-to-cart-btn"
                                         data-type="accessory"
                                         data-id="{{ $acc->id }}"
                                         data-name="{{ $acc->nama }}"
                                         data-price="{{ $acc->harga_per_hari }}"
-                                        data-price_type="per_hari"
-                                        style="padding: 0.375rem 0.75rem; color: #0652DD; border-color: #0652DD;"
-                                        onmouseover="this.style.backgroundColor='#0652DD'; this.style.color='white';"
-                                        onmouseout="this.style.backgroundColor=''; this.style.color='#0652DD';">
+                                        data-price_type="per_hari">
                                         <i class="bi bi-cart"></i>
                                     </button>
-                                    <a href="{{ route('pelanggan.rentals.create') }}?type=accessory&id={{ $acc->id }}" class="btn btn-sm btn-primary flex-grow-1"
-                                       style="background-color: #0652DD; border-color: #0652DD;"
-                                       onmouseover="this.style.backgroundColor='#032a8a'; this.style.borderColor='#032a8a';"
-                                       onmouseout="this.style.backgroundColor='#0652DD'; this.style.borderColor='#0652DD';">
+                                    <a href="{{ route('pelanggan.rentals.create') }}?type=accessory&id={{ $acc->id }}" class="btn btn-sm btn-primary flex-grow-1">
                                         {{ __('dashboard.rent') }}
                                     </a>
                                 </div>

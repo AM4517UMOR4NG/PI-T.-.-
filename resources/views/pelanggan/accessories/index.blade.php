@@ -8,9 +8,8 @@
             <div class="card-body">
                 <form method="GET" action="{{ route('pelanggan.accessories.index') }}" class="row g-3">
                     <div class="col-md-3">
-                        <label class="form-label small text-uppercase fw-bold" style="color: #6B7280;">{{ __('catalog.type') }}</label>
-                        <select name="jenis" class="form-select"
-                            style="background-color: #FFFFFF; border-color: #A3A3A3; color: #222222;">
+                        <label class="form-label small text-uppercase fw-bold text-muted">{{ __('catalog.type') }}</label>
+                        <select name="jenis" class="form-select">
                             <option value="">{{ __('catalog.all_types') }}</option>
                             @foreach (['Headset', 'Kabel', 'Adapter', 'Charger', 'Tas', 'Lainnya'] as $opt)
                                 <option value="{{ $opt }}" @selected(request('jenis') === $opt)>{{ $opt }}
@@ -19,19 +18,15 @@
                         </select>
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label small text-uppercase fw-bold" style="color: #6B7280;">{{ __('catalog.brand') }}</label>
+                        <label class="form-label small text-uppercase fw-bold text-muted">{{ __('catalog.brand') }}</label>
                         <input type="text" name="brand" value="{{ request('brand') }}" class="form-control"
-                            style="background-color: #FFFFFF; border-color: #A3A3A3; color: #222222;"
                             placeholder="{{ __('catalog.brand_placeholder') }}">
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label small text-uppercase fw-bold" style="color: #6B7280;">{{ __('catalog.search_accessory') }}</label>
+                        <label class="form-label small text-uppercase fw-bold text-muted">{{ __('catalog.search_accessory') }}</label>
                         <div class="input-group">
-                            <span class="input-group-text"
-                                style="background-color: #FFFFFF; border-color: #A3A3A3; color: #6B7280;"><i
-                                    class="bi bi-search"></i></span>
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
                             <input type="text" name="q" value="{{ request('q') }}" class="form-control"
-                                style="background-color: #FFFFFF; border-color: #A3A3A3; color: #222222;"
                                 placeholder="{{ __('catalog.search_accessory_placeholder') }}">
                         </div>
                     </div>
@@ -89,42 +84,36 @@
                                 </div>
                                 <div class="card-body d-flex flex-column">
                                     <div class="text-center mb-3">
-                                        <h5 class="card-title fw-bold mb-1" style="color: #000000;">{{ $acc->nama }}</h5>
-                                        <p class="mb-1" style="font-size: 1rem; color: #6B7280; font-weight: 500;">
+                                        <h5 class="card-title fw-bold mb-1 text-brand-main">{{ $acc->nama }}</h5>
+                                        <p class="mb-1 text-muted fw-bold">
                                             {{ $acc->jenis }}</p>
                                         @php
                                             $stok = $acc->stok ?? 0;
                                         @endphp
                                         @if ($stok > 0)
-                                            <div class="mb-2" style="font-size: 1rem; color: #6B7280; font-weight: 500;">
-                                                {{ __('catalog.available') }} {{ $stok }}
+                                            <div class="mb-2 text-success fw-bold small">
+                                                <i class="bi bi-check-circle-fill me-1"></i>{{ __('catalog.available') }} {{ $stok }}
                                             </div>
                                         @else
-                                            <div class="mb-2" style="font-size: 1rem; color: #6B7280; font-weight: 500;">
-                                                {{ __('catalog.out_of_stock') }}
+                                            <div class="mb-2 text-danger fw-bold small">
+                                                <i class="bi bi-x-circle-fill me-1"></i>{{ __('catalog.out_of_stock') }}
                                             </div>
                                         @endif
-                                        <div class="fw-bold" style="color: #009432;">Rp
+                                        <div class="fw-bold fs-5 text-brand-main">Rp
                                             {{ number_format($acc->harga_per_hari, 0, ',', '.') }}<span
-                                                class="small fw-normal" style="color: #009432;">{{ __('catalog.per_day') }}</span></div>
+                                                class="small fw-normal text-muted ms-1">{{ __('catalog.per_day') }}</span></div>
                                     </div>
                                     <div class="mt-auto">
                                         <div class="d-flex gap-2">
-                                            <button type="button" class="btn btn-sm btn-outline-secondary add-to-cart-btn"
+                                            <button type="button" class="btn btn-sm btn-outline-primary add-to-cart-btn"
                                                 data-type="accessory"
                                                 data-id="{{ $acc->id }}"
                                                 data-name="{{ $acc->nama }}"
                                                 data-price="{{ $acc->harga_per_hari }}"
-                                                data-price_type="per_hari"
-                                                style="padding: 0.375rem 0.75rem; color: #0652DD; border-color: #0652DD;"
-                                                onmouseover="this.style.backgroundColor='#0652DD'; this.style.color='white';"
-                                                onmouseout="this.style.backgroundColor=''; this.style.color='#0652DD';">
+                                                data-price_type="per_hari">
                                                 <i class="bi bi-cart"></i>
                                             </button>
-                                            <a href="{{ route('pelanggan.rentals.create') }}?type=accessory&id={{ $acc->id }}" class="btn btn-sm btn-primary flex-grow-1"
-                                               style="background-color: #0652DD; border-color: #0652DD;"
-                                               onmouseover="this.style.backgroundColor='#032a8a'; this.style.borderColor='#032a8a';"
-                                               onmouseout="this.style.backgroundColor='#0652DD'; this.style.borderColor='#0652DD';">
+                                            <a href="{{ route('pelanggan.rentals.create') }}?type=accessory&id={{ $acc->id }}" class="btn btn-sm btn-primary flex-grow-1">
                                                 {{ __('catalog.rent') }}
                                             </a>
                                         </div>
@@ -135,14 +124,14 @@
                     @empty
                         <div class="col-12">
                             <div class="text-center py-5">
-                                <i class="bi bi-headset" style="color: #6B7280; font-size: 3rem;"></i>
-                                <p class="mt-3 mb-0" style="color: #6B7280;">{{ __('catalog.no_accessories') }}</p>
+                                <i class="bi bi-headset display-1 text-muted"></i>
+                                <p class="mt-3 mb-0 text-muted">{{ __('catalog.no_accessories') }}</p>
                             </div>
                         </div>
                     @endforelse
                 </div>
             </div>
-            <div class="card-footer border-0 bg-transparent py-3" style="border-top: 1px solid #E5E7EB; color: #222222;">
+            <div class="card-footer border-top-0 bg-transparent py-3">
                 {{ $accessories->withQueryString()->links() }}
             </div>
         </div>

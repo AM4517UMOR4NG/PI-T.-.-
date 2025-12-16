@@ -30,6 +30,79 @@
         html[data-theme="dark"] .table tbody tr:hover {
             background-color: rgba(255, 255, 255, 0.05);
         }
+        
+        /* Dark Mode Badge Overrides - Override inline styles */
+        html[data-theme="dark"] .table .badge {
+            color: #ffffff !important;
+            border-color: currentColor !important;
+        }
+        
+        /* Status badge backgrounds for dark mode */
+        html[data-theme="dark"] .table .badge[style*="#fbc531"] {
+            background-color: rgba(251, 197, 49, 0.25) !important;
+            color: #fbbf24 !important;
+            border-color: rgba(251, 197, 49, 0.5) !important;
+        }
+        html[data-theme="dark"] .table .badge[style*="#44bd32"] {
+            background-color: rgba(68, 189, 50, 0.25) !important;
+            color: #4ade80 !important;
+            border-color: rgba(68, 189, 50, 0.5) !important;
+        }
+        html[data-theme="dark"] .table .badge[style*="#e84118"] {
+            background-color: rgba(232, 65, 24, 0.25) !important;
+            color: #f87171 !important;
+            border-color: rgba(232, 65, 24, 0.5) !important;
+        }
+        html[data-theme="dark"] .table .badge[style*="#94a3b8"] {
+            background-color: rgba(148, 163, 184, 0.25) !important;
+            color: #cbd5e1 !important;
+            border-color: rgba(148, 163, 184, 0.5) !important;
+        }
+        html[data-theme="dark"] .table .badge[style*="#0652DD"] {
+            background-color: rgba(6, 82, 221, 0.4) !important;
+            color: #93c5fd !important;
+            border-color: rgba(6, 82, 221, 0.6) !important;
+        }
+        
+        /* Button detail dark mode */
+        html[data-theme="dark"] .table .btn[style*="#0652DD"] {
+            background-color: #2563eb !important;
+            border-color: #2563eb !important;
+            color: #ffffff !important;
+        }
+        
+        /* Cyan badge for menunggu_pengantaran */
+        /* Cyan badge for menunggu_pengantaran */
+        html[data-theme="dark"] .table .badge[style*="#0ea5e9"] {
+            background-color: rgba(14, 165, 233, 0.3) !important;
+            color: #7dd3fc !important;
+            border-color: rgba(14, 165, 233, 0.5) !important;
+        }
+
+        /* Custom Alerts for Rentals */
+        .alert-rental-success {
+            background-color: #d1fae5;
+            border: 1px solid #10b981;
+            color: #065f46;
+        }
+
+        .alert-rental-error {
+            background-color: #fee2e2;
+            border: 1px solid #ef4444;
+            color: #991b1b;
+        }
+
+        html[data-theme="dark"] .alert-rental-success {
+            background-color: rgba(6, 95, 70, 0.3);
+            border-color: #10b981;
+            color: #6ee7b7;
+        }
+
+        html[data-theme="dark"] .alert-rental-error {
+            background-color: rgba(153, 27, 27, 0.3);
+            border-color: #ef4444;
+            color: #fca5a5;
+        }
     </style>
     @endpush
     <!-- Header & Filter -->
@@ -40,13 +113,13 @@
             </div>
 
             @if(session('status'))
-                <div class="alert rounded-3 mb-4 d-flex align-items-center" style="background-color: #d1fae5; border: 1px solid #10b981; color: #065f46;">
+                <div class="alert rounded-3 mb-4 d-flex align-items-center alert-rental-success">
                     <i class="bi bi-check-circle-fill me-2"></i>{{ session('status') }}
                 </div>
             @endif
 
             @if(session('error'))
-                <div class="alert rounded-3 mb-4 d-flex align-items-center" style="background-color: #fee2e2; border: 1px solid #ef4444; color: #991b1b;">
+                <div class="alert rounded-3 mb-4 d-flex align-items-center alert-rental-error">
                     <i class="bi bi-exclamation-circle-fill me-2"></i>{{ session('error') }}
                 </div>
             @endif
@@ -146,6 +219,8 @@
                                 @endphp
                                 @if($rental->status === 'pending')
                                     <span class="badge" style="background-color: #fbc531; color: #222222; border: 1px solid #fbc531;">{{ __('cart.status_pending') }}</span>
+                                @elseif($rental->status === 'menunggu_pengantaran')
+                                    <span class="badge" style="background-color: #0ea5e9; color: #FFFFFF; border: 1px solid #0ea5e9;">Menunggu Pengantaran</span>
                                 @elseif($rental->status === 'sedang_disewa')
                                     <span class="badge" style="background-color: #44bd32; color: #FFFFFF; border: 1px solid #44bd32;">{{ __('cart.status_active') }}</span>
                                 @elseif($rental->status === 'menunggu_konfirmasi')

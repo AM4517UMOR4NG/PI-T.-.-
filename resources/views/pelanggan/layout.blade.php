@@ -256,9 +256,6 @@
         /* Sidebar Open: 3 Columns (Wider Cards) */
         body:not(.sidebar-collapsed) .main-content .row-cols-lg-4 > *,
         body:not(.sidebar-collapsed) .main-content .row-cols-xl-4 > * {
-            --card-bg: #1e293b;
-            --card-bg: #1e293b;
-            --card-border: rgba(255, 255, 255, 0.2); /* Lebih terang/jelas untuk dark mode */
             flex: 0 0 auto;
             width: 33.3333%;
         }

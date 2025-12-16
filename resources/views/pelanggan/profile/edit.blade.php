@@ -60,11 +60,11 @@
             <div class="card mb-4">
                 <div class="card-body d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
                     <div class="text-center text-md-start">
-                        <h4 class="mb-1 fw-bold" style="color: #222222;"><i class="bi bi-pencil-square me-2" style="color: #1E40FF;"></i>Edit Profil</h4>
-                        <p class="mb-0 small" style="color: #6B7280;">Perbarui informasi akun dan data diri Anda</p>
+                        <h4 class="mb-1 fw-bold text-main"><i class="bi bi-pencil-square me-2 text-primary"></i>Edit Profil</h4>
+                        <p class="mb-0 small text-muted">Perbarui informasi akun dan data diri Anda</p>
                     </div>
                     <div>
-                        <a href="{{ route('pelanggan.profile.show') }}" class="btn btn-sm rounded-pill px-3" style="color: #0652DD; border: 1px solid #0652DD; background-color: transparent;" onmouseover="this.style.backgroundColor='#0652DD'; this.style.color='white';" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#0652DD';">
+                        <a href="{{ route('pelanggan.profile.show') }}" class="btn btn-sm rounded-pill px-3 btn-outline-primary">
                             <i class="bi bi-arrow-left me-2"></i>Kembali
                         </a>
                     </div>
@@ -113,15 +113,15 @@
 
                         <div class="row g-4 justify-content-center">
                             <div class="col-12 col-md-10">
-                                <h5 class="fw-bold text-center" style="color: #222222; border-bottom: 1px solid #E5E7EB; padding-bottom: 0.5rem; margin-bottom: 1rem;">Informasi Dasar</h5>
+                                <h5 class="fw-bold text-center text-main border-bottom pb-2 mb-3">Informasi Dasar</h5>
                             </div>
 
                             <div class="col-12 col-md-10 mb-3">
-                                <label class="form-label fw-bold small text-uppercase d-block text-center" style="color: #6B7280;">Nama Lengkap</label>
-                                <div class="d-flex align-items-center justify-content-center gap-2" style="border: 2px solid #A3A3A3; border-radius: 0.375rem; background-color: #FFFFFF;">
-                                    <i class="bi bi-person ms-3" style="color: #6B7280;"></i>
+                                <label class="form-label fw-bold small text-uppercase d-block text-center text-muted">Nama Lengkap</label>
+                                <div class="d-flex align-items-center justify-content-center gap-2 form-control p-0 ps-3">
+                                    <i class="bi bi-person text-muted"></i>
                                     <input type="text" name="name" value="{{ old('name', $user->name) }}" required
-                                           class="form-control border-0 flex-grow-1" style="background-color: transparent; color: #222222; outline: none; box-shadow: none;" @error('name') style="border-color: #ef4444;" @enderror placeholder="Nama Lengkap">
+                                           class="form-control border-0 shadow-none bg-transparent text-main" placeholder="Nama Lengkap">
                                 </div>
                                 @error('name')
                                     <small class="text-danger mt-1 d-block text-center">{{ $message }}</small>
@@ -129,11 +129,11 @@
                             </div>
 
                             <div class="col-12 col-md-10 mb-3">
-                                <label class="form-label fw-bold small text-uppercase d-block text-center" style="color: #6B7280;">Email</label>
-                                <div class="d-flex align-items-center justify-content-center gap-2" style="border: 2px solid #A3A3A3; border-radius: 0.375rem; background-color: #FFFFFF;">
-                                    <i class="bi bi-envelope ms-3" style="color: #6B7280;"></i>
+                                <label class="form-label fw-bold small text-uppercase d-block text-center text-muted">Email</label>
+                                <div class="d-flex align-items-center justify-content-center gap-2 form-control p-0 ps-3">
+                                    <i class="bi bi-envelope text-muted"></i>
                                     <input type="email" name="email" value="{{ old('email', $user->email) }}" required
-                                           class="form-control border-0 flex-grow-1" style="background-color: transparent; color: #222222; outline: none; box-shadow: none;" @error('email') style="border-color: #ef4444;" @enderror placeholder="Alamat Email">
+                                           class="form-control border-0 shadow-none bg-transparent text-main" placeholder="Alamat Email">
                                 </div>
                                 @error('email')
                                     <small class="text-danger mt-1 d-block text-center">{{ $message }}</small>
@@ -141,15 +141,15 @@
                             </div>
 
                             <div class="col-12 mt-4">
-                                <h5 class="fw-bold text-center" style="color: #222222; border-bottom: 1px solid #E5E7EB; padding-bottom: 0.5rem; margin-bottom: 1rem;">Kontak & Alamat</h5>
+                                <h5 class="fw-bold text-center text-main border-bottom pb-2 mb-3">Kontak & Alamat</h5>
                             </div>
 
                             <div class="col-12 col-md-10 mb-3">
-                                <label class="form-label fw-bold small text-uppercase d-block text-center" style="color: #6B7280;">Nomor Telepon <span class="text-danger" style="color: #ef4444 !important;">*</span></label>
-                                <div class="d-flex align-items-center justify-content-center gap-2" style="border: 2px solid #A3A3A3; border-radius: 0.375rem; background-color: #FFFFFF;">
-                                    <i class="bi bi-telephone ms-3" style="color: #6B7280;"></i>
+                                <label class="form-label fw-bold small text-uppercase d-block text-center text-muted">Nomor Telepon <span class="text-danger">*</span></label>
+                                <div class="d-flex align-items-center justify-content-center gap-2 form-control p-0 ps-3">
+                                    <i class="bi bi-telephone text-muted"></i>
                                     <input type="text" name="phone" value="{{ old('phone', $user->phone) }}" required
-                                           class="form-control border-0 flex-grow-1" style="background-color: transparent; color: #222222; outline: none; box-shadow: none;" @error('phone') style="border-color: #ef4444;" @enderror
+                                           class="form-control border-0 shadow-none bg-transparent text-main"
                                            placeholder="Contoh: +6281234567890">
                                 </div>
                                 @error('phone')
@@ -158,11 +158,11 @@
                             </div>
 
                             <div class="col-12 col-md-10 mb-3">
-                                <label class="form-label fw-bold small text-uppercase d-block text-center" style="color: #6B7280;">Alamat Lengkap <span class="text-danger" style="color: #ef4444 !important;">*</span></label>
-                                <div class="d-flex align-items-center justify-content-center gap-2" style="border: 2px solid #A3A3A3; border-radius: 0.375rem; background-color: #FFFFFF;">
-                                    <i class="bi bi-geo-alt ms-3" style="color: #6B7280;"></i>
+                                <label class="form-label fw-bold small text-uppercase d-block text-center text-muted">Alamat Lengkap <span class="text-danger">*</span></label>
+                                <div class="d-flex align-items-center justify-content-center gap-2 form-control p-0 ps-3">
+                                    <i class="bi bi-geo-alt text-muted"></i>
                                     <input type="text" name="address" value="{{ old('address', $user->address) }}" required
-                                           class="form-control border-0 flex-grow-1" style="background-color: transparent; color: #222222; outline: none; box-shadow: none;" @error('address') style="border-color: #ef4444;" @enderror
+                                           class="form-control border-0 shadow-none bg-transparent text-main"
                                            placeholder="Jalan, Nomor Rumah, Kota">
                                 </div>
                                 @error('address')
@@ -171,15 +171,15 @@
                             </div>
 
                             <div class="col-12 mt-4">
-                                <h5 class="fw-bold text-center" style="color: #222222; border-bottom: 1px solid #E5E7EB; padding-bottom: 0.5rem; margin-bottom: 1rem;">Keamanan</h5>
+                                <h5 class="fw-bold text-center text-main border-bottom pb-2 mb-3">Keamanan</h5>
                             </div>
 
                             <div class="col-12 col-md-10 mb-3">
-                                <label class="form-label fw-bold small text-uppercase d-block text-center" style="color: #6B7280;">Password Baru</label>
-                                <div class="d-flex align-items-center justify-content-center gap-2" style="border: 2px solid #A3A3A3; border-radius: 0.375rem; background-color: #FFFFFF;">
-                                    <i class="bi bi-lock ms-3" style="color: #6B7280;"></i>
+                                <label class="form-label fw-bold small text-uppercase d-block text-center text-muted">Password Baru</label>
+                                <div class="d-flex align-items-center justify-content-center gap-2 form-control p-0 ps-3">
+                                    <i class="bi bi-lock text-muted"></i>
                                     <input type="password" name="password"
-                                           class="form-control border-0 flex-grow-1" style="background-color: transparent; color: #222222; outline: none; box-shadow: none;" @error('password') style="border-color: #ef4444;" @enderror
+                                           class="form-control border-0 shadow-none bg-transparent text-main"
                                            placeholder="Kosongkan jika tidak ingin mengubah">
                                 </div>
                                 @error('password')
@@ -188,11 +188,11 @@
                             </div>
 
                             <div class="col-12 col-md-10 mb-3">
-                                <label class="form-label fw-bold small text-uppercase d-block text-center" style="color: #6B7280;">Konfirmasi Password</label>
-                                <div class="d-flex align-items-center justify-content-center gap-2" style="border: 2px solid #A3A3A3; border-radius: 0.375rem; background-color: #FFFFFF;">
-                                    <i class="bi bi-lock-fill ms-3" style="color: #6B7280;"></i>
+                                <label class="form-label fw-bold small text-uppercase d-block text-center text-muted">Konfirmasi Password</label>
+                                <div class="d-flex align-items-center justify-content-center gap-2 form-control p-0 ps-3">
+                                    <i class="bi bi-lock-fill text-muted"></i>
                                     <input type="password" name="password_confirmation"
-                                           class="form-control border-0 flex-grow-1" style="background-color: transparent; color: #222222; outline: none; box-shadow: none;"
+                                           class="form-control border-0 shadow-none bg-transparent text-main"
                                            placeholder="Ulangi password baru">
                                 </div>
                             </div>

@@ -26,7 +26,7 @@
                             <div class="position-relative d-inline-block mb-3">
                                 <div id="avatar-preview-container" class="rounded-circle overflow-hidden d-flex align-items-center justify-content-center text-white fw-bold shadow-lg" style="width: 120px; height: 120px; font-size: 3rem; background: linear-gradient(135deg, #0652DD 0%, #0043b8 100%); border: 4px solid var(--card-bg);">
                                     @if(Auth::user()->avatar)
-                                        <img src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="Avatar" class="w-100 h-100 object-fit-cover">
+                                        <img src="{{ asset('storage/' . Auth::user()->avatar) }}?v={{ time() }}" alt="Avatar" class="w-100 h-100 object-fit-cover">
                                     @else
                                         {{ substr(Auth::user()->name, 0, 1) }}
                                     @endif
@@ -181,24 +181,58 @@
 
     // Confirm delete avatar
     function confirmDeleteAvatar() {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        
         if (typeof Swal !== 'undefined') {
             Swal.fire({
-                title: '{{ __('profile.confirm_delete_title') }}',
-                text: '{{ __('profile.confirm_delete_text') }}',
+                title: 'Hapus Foto Profil?',
+                html: '<p class="mb-0">Foto profil Anda akan dihapus secara permanen.<br><small style="opacity: 0.7;">Tindakan ini tidak dapat dibatalkan.</small></p>',
                 icon: 'warning',
+                iconColor: '#ef4444',
                 showCancelButton: true,
-                confirmButtonText: '{{ __('profile.yes_delete') }}',
-                cancelButtonText: '{{ __('profile.cancel') }}',
-                confirmButtonColor: '#ef4444',
-                cancelButtonColor: '#64748b',
-                background: document.documentElement.getAttribute('data-theme') === 'dark' ? '#1e293b' : '#ffffff',
-                color: document.documentElement.getAttribute('data-theme') === 'dark' ? '#f8fafc' : '#1e293b',
+                confirmButtonText: '<i class="bi bi-trash me-1"></i> Ya, Hapus',
+                cancelButtonText: '<i class="bi bi-check-lg me-1"></i> Batal',
+                background: isDark ? '#1e293b' : '#ffffff',
+                color: isDark ? '#f1f5f9' : '#1e293b',
+                customClass: {
+                    popup: 'rounded-4 shadow-lg',
+                    title: 'fs-5 fw-bold',
+                    htmlContainer: 'text-center'
+                },
+                buttonsStyling: false,
+                reverseButtons: true,
+                focusCancel: true,
+                didOpen: () => {
+                    // Style confirm button (red/danger)
+                    const confirmBtn = Swal.getConfirmButton();
+                    confirmBtn.style.cssText = 'background-color: #ef4444; color: white; border: none; padding: 10px 24px; border-radius: 50px; font-weight: 600; margin-left: 10px; cursor: pointer;';
+                    confirmBtn.onmouseover = () => confirmBtn.style.backgroundColor = '#dc2626';
+                    confirmBtn.onmouseout = () => confirmBtn.style.backgroundColor = '#ef4444';
+                    
+                    // Style cancel button (green/success)
+                    const cancelBtn = Swal.getCancelButton();
+                    cancelBtn.style.cssText = 'background-color: #10b981; color: white; border: none; padding: 10px 24px; border-radius: 50px; font-weight: 600; cursor: pointer;';
+                    cancelBtn.onmouseover = () => cancelBtn.style.backgroundColor = '#059669';
+                    cancelBtn.onmouseout = () => cancelBtn.style.backgroundColor = '#10b981';
+                }
             }).then((result) => {
                 if (result.isConfirmed) {
+                    // Show loading state
+                    Swal.fire({
+                        title: 'Menghapus...',
+                        html: 'Mohon tunggu sebentar',
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        background: isDark ? '#1e293b' : '#ffffff',
+                        color: isDark ? '#f1f5f9' : '#1e293b',
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
                     document.getElementById('delete-avatar-form').submit();
                 }
             });
-        } else if (confirm('{{ __('profile.confirm_delete_title') }}')) {
+        } else if (confirm('Hapus Foto Profil? Tindakan ini tidak dapat dibatalkan.')) {
             document.getElementById('delete-avatar-form').submit();
         }
     }

@@ -57,6 +57,12 @@
         border: 1px solid #f59e0b !important;
         font-weight: 600;
     }
+    .badge-delivery {
+        background-color: #ede9fe !important;
+        color: #5b21b6 !important;
+        border: 1px solid #8b5cf6 !important;
+        font-weight: 600;
+    }
     
     /* Card styling */
     .rental-card {
@@ -163,6 +169,11 @@
         color: #fbbf24 !important;
         border-color: rgba(245, 158, 11, 0.5) !important;
     }
+    [data-theme="dark"] .badge-delivery {
+        background-color: rgba(139, 92, 246, 0.3) !important;
+        color: #c4b5fd !important;
+        border-color: rgba(139, 92, 246, 0.5) !important;
+    }
     [data-theme="dark"] .alert-success-custom {
         background-color: rgba(16, 185, 129, 0.2) !important;
         color: #34d399 !important;
@@ -182,6 +193,72 @@
         background-color: rgba(6, 182, 212, 0.2) !important;
         color: #22d3ee !important;
         border-color: rgba(6, 182, 212, 0.4) !important;
+    }
+    [data-theme="dark"] .alert-info-custom {
+        background-color: rgba(6, 182, 212, 0.2) !important;
+        color: #22d3ee !important;
+        border-color: rgba(6, 182, 212, 0.4) !important;
+    }
+
+    /* Delivery Card Styles */
+    .delivery-card {
+        border: 2px solid #0ea5e9;
+        background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%);
+        color: #1e293b;
+    }
+    .delivery-card-title {
+        color: #0369a1;
+    }
+    .delivery-card-text {
+        color: #1e293b;
+    }
+    .delivery-card-spinner {
+        color: #0ea5e9;
+    }
+    
+    /* Dark Mode for Delivery Card */
+    [data-theme="dark"] .delivery-card {
+        border-color: #0ea5e9;
+        background: linear-gradient(135deg, #0c4a6e 0%, #075985 100%);
+        color: #e2e8f0;
+    }
+    [data-theme="dark"] .delivery-card-title {
+        color: #38bdf8;
+    }
+    [data-theme="dark"] .delivery-card-text {
+        color: #e2e8f0;
+    }
+    [data-theme="dark"] .delivery-card-spinner {
+        color: #7dd3fc;
+    }
+    [data-theme="dark"] .delivery-card strong {
+        color: #f8fafc;
+    }
+    [data-theme="dark"] .delivery-card small.text-muted {
+        color: #cbd5e1 !important;
+    }
+    
+    /* Delivery Address Box */
+    .delivery-address-box {
+        background-color: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    .delivery-address-label {
+        color: #64748b;
+    }
+    .delivery-address-text {
+        color: #1e293b;
+    }
+    
+    [data-theme="dark"] .delivery-address-box {
+        background-color: rgba(15, 23, 42, 0.6);
+        border: 1px solid rgba(148, 163, 184, 0.2);
+    }
+    [data-theme="dark"] .delivery-address-label {
+        color: #94a3b8;
+    }
+    [data-theme="dark"] .delivery-address-text {
+        color: #f1f5f9;
     }
 </style>
 
@@ -269,6 +346,7 @@
                                 @php
                                   $statusText = match($rental->status) {
                                     'pending' => 'Menunggu Pembayaran',
+                                    'menunggu_pengantaran' => 'Menunggu Pengantaran',
                                     'sedang_disewa' => 'Sedang Disewa',
                                     'menunggu_konfirmasi' => 'Menunggu Konfirmasi',
                                     'selesai' => 'Selesai',
@@ -278,6 +356,8 @@
                                 @endphp
                                 @if($rental->status === 'pending')
                                     <span class="badge badge-pending"><i class="bi bi-clock me-1"></i>{{ $statusText }}</span>
+                                @elseif($rental->status === 'menunggu_pengantaran')
+                                    <span class="badge badge-delivery"><i class="bi bi-truck me-1"></i>{{ $statusText }}</span>
                                 @elseif($rental->status === 'sedang_disewa')
                                     <span class="badge badge-active"><i class="bi bi-play-circle me-1"></i>{{ $statusText }}</span>
                                 @elseif($rental->status === 'menunggu_konfirmasi')
@@ -332,6 +412,60 @@
                     @endif
 
                     <!-- Actions -->
+                    @if($rental->status === 'menunggu_pengantaran')
+                        <div class="mt-4">
+                            <div class="rental-card p-4 delivery-card">
+                                <h6 class="fw-bold mb-3 delivery-card-title">
+                                    <i class="bi bi-truck me-2"></i>Status Pengantaran
+                                </h6>
+                                
+                                @if($rental->delivered_at)
+                                    <!-- Barang sudah diantar, user bisa konfirmasi -->
+                                    <div class="alert alert-success mb-3">
+                                        <i class="bi bi-check-circle me-2"></i>
+                                        <strong>Barang sudah diantarkan!</strong>
+                                        <br>
+                                        <small>Diantar pada: {{ $rental->delivered_at->format('d M Y, H:i') }}</small>
+                                        @if($rental->delivery_notes)
+                                            <br><small>Catatan: {{ $rental->delivery_notes }}</small>
+                                        @endif
+                                    </div>
+                                    
+                                    <p class="mb-3 delivery-card-text">
+                                        <i class="bi bi-info-circle me-1"></i>
+                                        Silakan konfirmasi jika Anda sudah menerima barang. 
+                                        <strong>Waktu sewa akan mulai terhitung setelah Anda mengkonfirmasi penerimaan.</strong>
+                                    </p>
+                                    
+                                    <form action="{{ route('pelanggan.rentals.confirm-delivery', $rental) }}" method="POST" 
+                                        onsubmit="return confirm('Apakah Anda sudah menerima barang dengan baik? Waktu sewa akan mulai terhitung setelah konfirmasi ini.')">
+                                        @csrf
+                                        <button type="submit" class="btn btn-success w-100 fw-bold py-2">
+                                            <i class="bi bi-check-circle me-2"></i>Konfirmasi Sudah Menerima Barang
+                                        </button>
+                                    </form>
+                                @else
+                                    <!-- Barang belum diantar -->
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="spinner-border spinner-border-sm delivery-card-spinner me-3" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <div>
+                                            <strong class="delivery-card-text">Pesanan sedang diproses</strong>
+                                            <br>
+                                            <small class="text-muted">Barang akan segera diantarkan ke alamat Anda</small>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="p-3 rounded delivery-address-box">
+                                        <small class="delivery-address-label"><i class="bi bi-geo-alt me-1"></i>Alamat pengiriman:</small>
+                                        <p class="mb-0 fw-bold delivery-address-text">{{ auth()->user()->address ?? 'Alamat belum diisi' }}</p>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
+
                     @if($rental->status === 'sedang_disewa')
                         <div class="mt-4">
                             <a href="{{ route('pelanggan.rentals.return', $rental) }}" class="btn btn-warning w-100 fw-bold" style="color: #222222;">

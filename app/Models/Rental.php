@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Carbon\Carbon;
 
 class Rental extends Model
 {
@@ -31,6 +32,12 @@ class Rental extends Model
         'late_fee_description',
         'cancelled_at',
         'cancel_reason',
+        // Delivery fields
+        'delivered_at',
+        'delivery_confirmed_at',
+        'delivered_by',
+        'delivery_notes',
+        'delivery_address',
     ];
 
     protected $casts = [
@@ -38,6 +45,8 @@ class Rental extends Model
         'due_at' => 'datetime',
         'returned_at' => 'datetime',
         'cancelled_at' => 'datetime',
+        'delivered_at' => 'datetime',
+        'delivery_confirmed_at' => 'datetime',
     ];
 
     public function customer(): BelongsTo
@@ -50,6 +59,14 @@ class Rental extends Model
         return $this->belongsTo(User::class, 'handled_by');
     }
 
+    /**
+     * Relasi ke user yang mengantarkan barang (kurir/kasir/admin)
+     */
+    public function deliverer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'delivered_by');
+    }
+
     public function items(): HasMany
     {
         return $this->hasMany(RentalItem::class);
@@ -58,6 +75,41 @@ class Rental extends Model
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);
+    }
+
+    /**
+     * Cek apakah rental sedang menunggu pengantaran
+     */
+    public function isAwaitingDelivery(): bool
+    {
+        return $this->status === 'menunggu_pengantaran';
+    }
+
+    /**
+     * Cek apakah barang sudah diantar tapi belum dikonfirmasi user
+     */
+    public function isAwaitingDeliveryConfirmation(): bool
+    {
+        return $this->status === 'menunggu_pengantaran' 
+            && $this->delivered_at !== null 
+            && $this->delivery_confirmed_at === null;
+    }
+
+    /**
+     * Cek apakah barang belum diantar
+     */
+    public function isPendingDelivery(): bool
+    {
+        return $this->status === 'menunggu_pengantaran' 
+            && $this->delivered_at === null;
+    }
+
+    /**
+     * Dapatkan waktu mulai efektif (setelah konfirmasi penerimaan)
+     */
+    public function getEffectiveStartTime(): ?Carbon
+    {
+        return $this->delivery_confirmed_at ?? $this->start_at;
     }
 
     /**

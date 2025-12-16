@@ -26,6 +26,16 @@
             <span class="badge bg-warning ms-auto">{{ $waitingCount }}</span>
         @endif
     </a>
+    <a href="{{ route('kasir.deliveries.index') }}" class="nav-link {{ request()->routeIs('kasir.deliveries.*') ? 'active' : '' }}">
+        <i class="bi bi-truck"></i>
+        <span>Pengantaran</span>
+        @php
+            $pendingDeliveryCount = \App\Models\Rental::where('status', 'menunggu_pengantaran')->count();
+        @endphp
+        @if($pendingDeliveryCount > 0)
+            <span class="badge bg-info ms-auto">{{ $pendingDeliveryCount }}</span>
+        @endif
+    </a>
 
     <div class="sidebar-heading">Pembayaran</div>
 

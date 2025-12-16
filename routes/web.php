@@ -207,6 +207,9 @@ Route::middleware(['web', 'auth', 'can:access-pelanggan'])->prefix('pelanggan')-
     Route::post('damage-reports/{damageReport}/confirm', [PelangganRentalController::class, 'confirmDamageReport'])->name('damage-reports.confirm');
     Route::get('damage-reports/{damageReport}/pay-fine', [PelangganRentalController::class, 'payFine'])->name('damage-reports.pay-fine');
     Route::match(['get', 'post'], 'damage-reports/{damageReport}/fine-callback', [PelangganRentalController::class, 'finePaymentCallback'])->name('damage-reports.fine-callback');
+    
+    // Pelanggan - Delivery Confirmation
+    Route::post('rentals/{rental}/confirm-delivery', [PelangganRentalController::class, 'confirmDeliveryReceipt'])->name('rentals.confirm-delivery');
 });
 
 Route::middleware(['web', 'auth', 'can:access-pemilik'])->prefix('pemilik')->name('pemilik.')->group(function () {
@@ -236,6 +239,12 @@ Route::middleware(['web', 'auth', 'can:access-kasir'])->prefix('kasir')->name('k
     
     // Confirm Return
     Route::post('confirm-return/{rental}', [\App\Http\Controllers\Kasir\KasirDashboardController::class, 'confirmReturn'])->name('confirm-return');
+    
+    // Delivery Management
+    Route::get('deliveries', [\App\Http\Controllers\Kasir\DeliveryController::class, 'index'])->name('deliveries.index');
+    Route::get('deliveries/{rental}', [\App\Http\Controllers\Kasir\DeliveryController::class, 'show'])->name('deliveries.show');
+    Route::post('deliveries/{rental}/confirm', [\App\Http\Controllers\Kasir\DeliveryController::class, 'confirmDelivery'])->name('deliveries.confirm');
+    Route::post('deliveries/{rental}/cancel', [\App\Http\Controllers\Kasir\DeliveryController::class, 'cancelDelivery'])->name('deliveries.cancel');
 
     // Legacy routes
     Route::get('transaksi', [TransaksiController::class, 'index'])->name('transaksi.index'); // form cari

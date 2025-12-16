@@ -57,6 +57,30 @@
             line-height: 1.6;
         }
 
+        /* Custom Brand Text Utility */
+        .text-brand-main {
+            color: var(--primary) !important;
+        }
+
+        /* Button Overrides for Brand Color */
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            border-color: var(--primary-hover);
+        }
+        .btn-outline-primary {
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+        .btn-outline-primary:hover {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+        
         /* Subtle Grid Background */
         .bg-grid {
             position: fixed;
@@ -107,7 +131,7 @@
         .logo-icon {
             min-width: 28px;
             height: 28px;
-            background: #0652DD;
+            background: var(--primary);
             border-radius: 6px;
             display: flex;
             align-items: center;
@@ -162,13 +186,13 @@
 
         .nav-link:hover {
             color: white;
-            background: #0652DD;
+            background: rgba(255, 255, 255, 0.1);
             transform: translateX(3px);
         }
 
         .nav-link.active {
             color: white;
-            background: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)), #0652DD;
+            background: rgba(255, 255, 255, 0.2);
             font-weight: 600;
         }
 
@@ -2296,14 +2320,14 @@
                 html: `
                     <div style="padding: 20px 10px;">
                         <!-- Animated Warning Icon -->
-                        <div style="width: 80px; height: 80px; margin: 0 auto 20px; background: ${isDark ? 'linear-gradient(135deg, rgba(234, 179, 8, 0.2) 0%, rgba(245, 158, 11, 0.3) 100%)' : 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)'}; border-radius: 50%; display: flex; align-items: center; justify-content: center; position: relative;">
-                            <div style="position: absolute; inset: -4px; border: 2px solid ${isDark ? 'rgba(234, 179, 8, 0.3)' : 'rgba(217, 119, 6, 0.2)'}; border-radius: 50%; animation: pulse-ring 1.5s ease-out infinite;"></div>
-                            <i class="bi bi-exclamation-triangle" style="font-size: 2.2rem; color: ${isDark ? '#fbbf24' : '#d97706'};"></i>
+                        <div style="width: 80px; height: 80px; margin: 0 auto 20px; background: ${isDark ? 'linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.3) 100%)' : 'linear-gradient(135deg, #fee2e2 0%, #fecaca 100%)'}; border-radius: 50%; display: flex; align-items: center; justify-content: center; position: relative;">
+                            <div style="position: absolute; inset: -4px; border: 2px solid ${isDark ? 'rgba(239, 68, 68, 0.3)' : 'rgba(239, 68, 68, 0.2)'}; border-radius: 50%; animation: pulse-ring 1.5s ease-out infinite;"></div>
+                            <i class="bi bi-trash3" style="font-size: 2.2rem; color: ${isDark ? '#f87171' : '#dc2626'};"></i>
                         </div>
                         
                         <!-- Title -->
                         <h2 style="font-size: 1.4rem; font-weight: 700; margin: 0 0 12px; color: ${isDark ? '#f1f5f9' : '#1e293b'};">
-                            Konfirmasi Aksi
+                            Hapus Item?
                         </h2>
                         
                         <!-- Message -->
@@ -2311,14 +2335,12 @@
                     </div>
                 `,
                 showCancelButton: true,
-                confirmButtonText: '<i class="bi bi-check-lg me-2"></i>Ya, Lanjutkan',
-                cancelButtonText: '<i class="bi bi-x-lg me-2"></i>Batal',
                 buttonsStyling: false,
+                reverseButtons: true,
+                focusCancel: true,
                 background: isDark ? '#1e293b' : '#ffffff',
                 customClass: {
-                    popup: isDark ? 'swal-dark-popup' : 'swal-light-popup',
-                    confirmButton: 'swal-confirm-btn-adaptive',
-                    cancelButton: 'swal-cancel-btn-adaptive',
+                    popup: isDark ? 'swal-dark-popup rounded-4' : 'swal-light-popup rounded-4',
                     actions: 'swal-actions'
                 },
                 showClass: {
@@ -2326,9 +2348,31 @@
                 },
                 hideClass: {
                     popup: 'animate__animated animate__fadeOutUp animate__faster'
+                },
+                didOpen: () => {
+                    // Style confirm button (red/danger)
+                    const confirmBtn = Swal.getConfirmButton();
+                    confirmBtn.innerHTML = '<i class="bi bi-trash me-2"></i>Ya, Hapus';
+                    confirmBtn.style.cssText = 'background-color: #ef4444; color: white; border: none; padding: 12px 28px; border-radius: 50px; font-weight: 600; margin-left: 12px; cursor: pointer; transition: all 0.2s;';
+                    confirmBtn.onmouseover = () => { confirmBtn.style.backgroundColor = '#dc2626'; confirmBtn.style.transform = 'translateY(-2px)'; };
+                    confirmBtn.onmouseout = () => { confirmBtn.style.backgroundColor = '#ef4444'; confirmBtn.style.transform = 'translateY(0)'; };
+                    
+                    // Style cancel button (green/success)
+                    const cancelBtn = Swal.getCancelButton();
+                    cancelBtn.innerHTML = '<i class="bi bi-x-lg me-2"></i>Batal';
+                    cancelBtn.style.cssText = 'background-color: #10b981; color: white; border: none; padding: 12px 28px; border-radius: 50px; font-weight: 600; cursor: pointer; transition: all 0.2s;';
+                    cancelBtn.onmouseover = () => { cancelBtn.style.backgroundColor = '#059669'; cancelBtn.style.transform = 'translateY(-2px)'; };
+                    cancelBtn.onmouseout = () => { cancelBtn.style.backgroundColor = '#10b981'; cancelBtn.style.transform = 'translateY(0)'; };
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
+                    // Show loading
+                    Swal.fire({
+                        html: '<div style="padding: 20px;"><div class="spinner-border text-primary mb-3" role="status"></div><p style="margin: 0; color: ' + (isDark ? '#f1f5f9' : '#1e293b') + ';">Menghapus...</p></div>',
+                        showConfirmButton: false,
+                        allowOutsideClick: false,
+                        background: isDark ? '#1e293b' : '#ffffff',
+                    });
                     document.getElementById(formId).submit();
                 }
             });

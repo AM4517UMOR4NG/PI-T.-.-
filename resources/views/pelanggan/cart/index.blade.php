@@ -128,14 +128,16 @@
                     @if($needsProfileUpdate)
                         <a href="{{ route('pelanggan.profile.edit') }}"
                            class="btn btn-warning btn-sm px-4 fw-bold"
-                           onclick="event.preventDefault(); Swal.fire({
+                           onclick="event.preventDefault(); 
+                           const settings = typeof getSwalSettings === 'function' ? getSwalSettings() : { background: '#ffffff', color: '#222222' };
+                           Swal.fire({
                                icon: 'info',
                                title: '{{ __('cart.profile_incomplete_title') }}',
                                text: '{{ __('cart.profile_incomplete_text') }}',
                                confirmButtonText: '{{ __('cart.complete_profile') }}',
                                confirmButtonColor: '#f59e0b',
-                               background: '#FFFFFF',
-                               color: '#222222'
+                               background: settings.background,
+                               color: settings.color
                            }).then((result) => {
                                if (result.isConfirmed) {
                                    window.location.href = '{{ route('pelanggan.profile.edit') }}';
@@ -157,6 +159,15 @@
 </div>
 
 <script>
+    // Helper to get Swal colors based on theme
+    function getSwalSettings() {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        return {
+            background: isDark ? '#1e293b' : '#ffffff',
+            color: isDark ? '#f8fafc' : '#222222'
+        };
+    }
+
     // Function to update grand total
     function updateGrandTotal() {
         let grandTotal = 0;
@@ -181,14 +192,15 @@
         const quantityElement = document.getElementById('quantity_' + type + '_' + itemId);
         const currentQty = parseInt(quantityElement.textContent);
         const maxStock = parseInt(quantityElement.dataset.maxStock || 999);
+        const swalSettings = getSwalSettings();
         
         if(currentQty >= maxStock) {
             Swal.fire({
                 icon: 'warning',
                 title: 'Stok Maksimal',
                 text: 'Jumlah sudah mencapai stok maksimal (' + maxStock + ')',
-                background: '#FFFFFF',
-                color: '#222222'
+                background: swalSettings.background,
+                color: swalSettings.color
             });
             return;
         }
@@ -201,14 +213,15 @@
     function decreaseQuantity(type, itemId) {
         const quantityElement = document.getElementById('quantity_' + type + '_' + itemId);
         const currentQty = parseInt(quantityElement.textContent);
+        const swalSettings = getSwalSettings();
         
         if(currentQty <= 1) {
             Swal.fire({
                 icon: 'warning',
                 title: 'Minimal 1',
                 text: 'Jumlah minimal adalah 1',
-                background: '#FFFFFF',
-                color: '#222222'
+                background: swalSettings.background,
+                color: swalSettings.color
             });
             return;
         }
@@ -222,6 +235,7 @@
         // Find buttons and disable them
         const minusBtn = document.querySelector(`button[onclick*="decreaseQuantity('${type}', ${itemId}"]`);
         const plusBtn = document.querySelector(`button[onclick*="increaseQuantity('${type}', ${itemId}"]`);
+        const swalSettings = getSwalSettings();
         
         if(minusBtn) minusBtn.disabled = true;
         if(plusBtn) plusBtn.disabled = true;
@@ -292,13 +306,12 @@
                 // alert(data.message);
             } else {
                 // Show error message and reset quantity display
-                // Show error message and reset quantity display
                 Swal.fire({
                     icon: 'error',
                     title: 'Gagal',
                     text: data.message || 'Terjadi kesalahan saat memperbarui jumlah',
-                    background: '#FFFFFF',
-                    color: '#222222'
+                    background: swalSettings.background,
+                    color: swalSettings.color
                 });
                 quantityElement.textContent = originalValue;
             }
@@ -315,8 +328,8 @@
                     icon: 'error',
                     title: 'Error',
                     text: 'Terjadi kesalahan saat memperbarui jumlah: ' + error.message,
-                    background: '#FFFFFF',
-                    color: '#222222'
+                    background: swalSettings.background,
+                    color: swalSettings.color
                 });
                 quantityElement.textContent = originalValue;
             }

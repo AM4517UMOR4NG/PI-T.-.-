@@ -167,14 +167,14 @@
         color: #34d399 !important;
     }
     
-    /* Profile Modal Styles */
+    /* Profile Modal Styles - Professional & Clean */
     .profile-modal-overlay {
         position: fixed;
         top: 0;
         left: 0;
         right: 0;
         bottom: 0;
-        background: rgba(0, 0, 0, 0.6);
+        background: rgba(17, 24, 39, 0.7);
         backdrop-filter: blur(8px);
         -webkit-backdrop-filter: blur(8px);
         z-index: 9999;
@@ -182,254 +182,274 @@
         align-items: center;
         justify-content: center;
         padding: 20px;
-        animation: fadeIn 0.3s ease;
+        opacity: 0;
+        animation: fadeIn 0.3s ease forwards;
     }
     
     @keyframes fadeIn {
-        from { opacity: 0; }
         to { opacity: 1; }
     }
     
-    @keyframes slideUp {
-        from { 
-            opacity: 0;
-            transform: translateY(30px) scale(0.95);
-        }
-        to { 
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
+    .profile-modal-card {
+        background: #ffffff;
+        border-radius: 20px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        max-width: 500px;
+        width: 100%;
+        max-height: 90vh; /* Ensure it fits in viewport */
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        transform: translateY(20px);
+        opacity: 0;
+        animation: slideUp 0.4s ease forwards 0.1s;
+        border: 1px solid rgba(229, 231, 235, 0.5);
     }
     
-    .profile-modal-card {
-        background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
-        border-radius: 24px;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-        max-width: 480px;
-        width: 100%;
-        overflow: hidden;
-        animation: slideUp 0.4s ease;
+    @keyframes slideUp {
+        to { 
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
     
     .profile-modal-header {
-        background: linear-gradient(135deg, #0652DD 0%, #1E40FF 50%, #3b82f6 100%);
-        padding: 32px 28px;
+        background: #ffffff;
+        padding: 32px 32px 0;
         text-align: center;
-        position: relative;
-        overflow: hidden;
+        border-bottom: none;
+        flex-shrink: 0; /* Header stays fixed */
     }
     
-    .profile-modal-header::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
-        animation: pulse 3s ease-in-out infinite;
-    }
-    
-    @keyframes pulse {
-        0%, 100% { transform: scale(1); opacity: 0.5; }
-        50% { transform: scale(1.1); opacity: 0.3; }
-    }
-    
-    .profile-modal-icon {
-        width: 80px;
-        height: 80px;
-        background: rgba(255, 255, 255, 0.2);
+    .profile-modal-icon-container {
+        width: 64px; /* Slightly smaller for better fit */
+        height: 64px;
+        background: #eff6ff;
+        color: #2563eb;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin: 0 auto 16px;
-        position: relative;
-        z-index: 1;
+        margin: 0 auto 20px;
+        border: 4px solid #dbeafe;
     }
     
-    .profile-modal-icon i {
-        font-size: 2.5rem;
-        color: white;
+    .profile-modal-icon-container i {
+        font-size: 28px;
     }
     
     .profile-modal-header h4 {
-        color: white;
+        color: #111827;
         font-weight: 700;
+        font-size: 1.35rem; /* Slightly smaller */
         margin-bottom: 8px;
-        position: relative;
-        z-index: 1;
-    }
-    
-    .profile-modal-header p {
-        color: rgba(255, 255, 255, 0.85);
-        font-size: 0.9rem;
-        margin: 0;
-        position: relative;
-        z-index: 1;
+        letter-spacing: -0.025em;
     }
     
     .profile-modal-body {
-        padding: 28px;
+        padding: 24px 32px 32px;
+        overflow-y: auto; /* Enable scrolling for content */
     }
     
-    .profile-form-group {
-        margin-bottom: 20px;
-    }
-    
-    .profile-form-label {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-weight: 600;
-        color: #374151;
-        margin-bottom: 8px;
-        font-size: 0.9rem;
-    }
-    
-    .profile-form-label i {
-        color: #0652DD;
-        font-size: 1.1rem;
-    }
-    
-    .profile-form-label .required {
-        color: #ef4444;
-        font-weight: 700;
-    }
-    
-    .profile-form-input {
-        width: 100%;
-        padding: 14px 16px;
-        border: 2px solid #e5e7eb;
-        border-radius: 12px;
-        font-size: 1rem;
-        color: #1f2937;
+    .profile-info-box {
         background: #f9fafb;
-        transition: all 0.3s ease;
-    }
-    
-    .profile-form-input:focus {
-        outline: none;
-        border-color: #0652DD;
-        background: white;
-        box-shadow: 0 0 0 4px rgba(6, 82, 221, 0.1);
-    }
-    
-    .profile-form-input::placeholder {
-        color: #9ca3af;
-    }
-    
-    .profile-form-textarea {
-        min-height: 100px;
-        resize: vertical;
-    }
-    
-    .profile-submit-btn {
-        width: 100%;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
         padding: 16px;
-        background: linear-gradient(135deg, #0652DD 0%, #1E40FF 100%);
-        color: white;
-        border: none;
-        border-radius: 12px;
-        font-weight: 600;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-    }
-    
-    .profile-submit-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(6, 82, 221, 0.35);
-    }
-    
-    .profile-submit-btn:active {
-        transform: translateY(0);
-    }
-    
-    .profile-submit-btn i {
-        font-size: 1.2rem;
-    }
-    
-    .profile-info-badge {
-        display: flex;
-        align-items: flex-start;
-        gap: 12px;
-        padding: 14px 16px;
-        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-        border-radius: 12px;
         margin-bottom: 24px;
-        border: 1px solid #f59e0b;
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
     }
     
-    .profile-info-badge i {
-        color: #d97706;
-        font-size: 1.3rem;
+    .profile-info-box i {
+        color: #3b82f6;
+        font-size: 1.25rem;
         margin-top: 2px;
     }
     
-    .profile-info-badge p {
-        color: #92400e;
-        font-size: 0.85rem;
+    .profile-info-box p {
+        font-size: 0.875rem;
+        color: #4b5563;
         margin: 0;
         line-height: 1.5;
     }
     
-    /* Dark Mode for Profile Modal */
+    .form-group-clean {
+        margin-bottom: 20px;
+    }
+    
+    .form-label-clean {
+        display: block;
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: #374151;
+        margin-bottom: 8px;
+    }
+    
+    .form-control-clean {
+        width: 100%;
+        padding: 12px 16px;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        color: #111827;
+        background-color: #ffffff;
+        border: 1px solid #d1d5db;
+        border-radius: 10px;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+    
+    .form-control-clean:focus {
+        border-color: #3b82f6;
+        outline: 0;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+    
+    .form-control-clean::placeholder {
+        color: #9ca3af;
+    }
+    
+    .btn-submit-clean {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        padding: 14px 20px;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #ffffff;
+        background-color: #2563eb;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        gap: 8px;
+    }
+    
+    .btn-submit-clean:hover {
+        background-color: #1d4ed8;
+    }
+    
+    /* Dark Mode Overrides */
     [data-theme="dark"] .profile-modal-card {
-        background: linear-gradient(145deg, #1f2937 0%, #111827 100%);
+        background: #1f2937;
+        border-color: #374151;
     }
     
     [data-theme="dark"] .profile-modal-header {
-        background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #2563eb 100%);
+        background: #1f2937;
     }
     
-    [data-theme="dark"] .profile-form-label {
+    [data-theme="dark"] .profile-modal-icon-container {
+        background: #1e3a8a;
+        color: #60a5fa;
+        border-color: #1e40af;
+    }
+    
+    [data-theme="dark"] .profile-modal-header h4 {
+        color: #f9fafb;
+    }
+    
+    [data-theme="dark"] .profile-modal-header p {
+        color: #9ca3af;
+    }
+    
+    [data-theme="dark"] .profile-info-box {
+        background: #111827;
+        border-color: #374151;
+    }
+    
+    [data-theme="dark"] .profile-info-box p {
+        color: #d1d5db;
+    }
+    
+    [data-theme="dark"] .form-label-clean {
         color: #e5e7eb;
     }
     
-    [data-theme="dark"] .profile-form-label i {
-        color: #60a5fa;
-    }
-    
-    [data-theme="dark"] .profile-form-input {
-        background: #374151;
+    [data-theme="dark"] .form-control-clean {
+        background-color: #111827;
         border-color: #4b5563;
-        color: #f3f4f6;
+        color: #f9fafb;
     }
     
-    [data-theme="dark"] .profile-form-input:focus {
-        border-color: #3b82f6;
-        background: #1f2937;
-        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+    [data-theme="dark"] .form-control-clean:focus {
+        border-color: #60a5fa;
+        box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.15);
     }
     
-    [data-theme="dark"] .profile-form-input::placeholder {
+    [data-theme="dark"] .form-control-clean::placeholder {
+        color: #6b7280;
+    }
+    /* Close Button Styles */
+    .profile-modal-close {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: transparent;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        color: #9ca3af;
+        z-index: 10;
+    }
+    
+    .profile-modal-close:hover {
+        background: #f3f4f6;
+        color: #374151;
+        transform: rotate(90deg);
+    }
+    
+    [data-theme="dark"] .profile-modal-close {
         color: #6b7280;
     }
     
-    [data-theme="dark"] .profile-info-badge {
-        background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.2) 100%);
-        border-color: rgba(245, 158, 11, 0.5);
+    [data-theme="dark"] .profile-modal-close:hover {
+        background: #374151;
+        color: #f3f4f6;
+    }
+
+    /* Custom Alert Styles */
+    .custom-alert-error {
+        background-color: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #ef4444;
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 1rem;
     }
     
-    [data-theme="dark"] .profile-info-badge i {
-        color: #fbbf24;
+    .custom-alert-error h6 {
+        color: #991b1b;
     }
     
-    [data-theme="dark"] .profile-info-badge p {
-        color: #fcd34d;
+    .custom-alert-error ul {
+        color: #7f1d1d;
+    }
+
+    /* Dark Mode Alert Overrides */
+    [data-theme="dark"] .custom-alert-error {
+        background-color: rgba(127, 29, 29, 0.4) !important;
+        border-color: #ef4444 !important;
+        color: #fca5a5 !important;
     }
     
-    [data-theme="dark"] .profile-submit-btn {
-        background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+    [data-theme="dark"] .custom-alert-error h6 {
+        color: #fca5a5 !important;
     }
     
-    [data-theme="dark"] .profile-submit-btn:hover {
-        box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+    [data-theme="dark"] .custom-alert-error ul {
+        color: #fecaca !important;
+    }
+    
+    [data-theme="dark"] .custom-alert-error i {
+        color: #ef4444 !important;
     }
 </style>
 
@@ -437,18 +457,23 @@
 @if($profileIncomplete ?? false)
 <div class="profile-modal-overlay" id="profileModal">
     <div class="profile-modal-card">
+        <button type="button" class="profile-modal-close" onclick="closeProfileModal()">
+            <i class="bi bi-x-lg"></i>
+        </button>
         <div class="profile-modal-header">
-            <div class="profile-modal-icon">
-                <i class="bi bi-person-badge"></i>
+            <div class="profile-modal-icon-container">
+                <i class="bi bi-person-lines-fill"></i>
             </div>
-            <h4>Lengkapi Profil Anda</h4>
-            <p>Informasi ini diperlukan untuk melanjutkan penyewaan</p>
+            <h4>Lengkapi Data Diri</h4>
+            <p>Mohon lengkapi informasi kontak Anda untuk kemudahan proses penyewaan dan verifikasi.</p>
         </div>
         <div class="profile-modal-body">
-            <div class="profile-info-badge">
-                <i class="bi bi-exclamation-triangle-fill"></i>
-                <p><strong>Penting!</strong> Nomor telepon dan alamat wajib diisi agar kami dapat menghubungi Anda terkait penyewaan.</p>
+            @if(empty($user->phone ?? auth()->user()->phone) || empty($user->address ?? auth()->user()->address))
+            <div class="profile-info-box">
+                <i class="bi bi-shield-check"></i>
+                <p>Data Anda aman dan hanya digunakan untuk keperluan konfirmasi pesanan.</p>
             </div>
+            @endif
             
             <form action="{{ route('pelanggan.profile.update') }}" method="POST" id="profileForm">
                 @csrf
@@ -456,27 +481,21 @@
                 <input type="hidden" name="redirect_back" value="{{ url()->current() }}">
                 
                 @if(empty($user->phone ?? auth()->user()->phone))
-                <div class="profile-form-group">
-                    <label class="profile-form-label">
-                        <i class="bi bi-telephone-fill"></i>
-                        Nomor Telepon <span class="required">*</span>
-                    </label>
-                    <input type="tel" name="phone" class="profile-form-input" 
-                           placeholder="Contoh: 081234567890" 
+                <div class="form-group-clean">
+                    <label class="form-label-clean">Nomor Telepon / WhatsApp</label>
+                    <input type="tel" name="phone" class="form-control-clean" 
+                           placeholder="08xxxxxxxxxx" 
                            value="{{ old('phone', $user->phone ?? '') }}" 
                            required pattern="[0-9]{10,15}"
-                           title="Masukkan nomor telepon yang valid (10-15 digit)">
+                           title="Masukkan nomor yang valid (10-15 digit)">
                 </div>
                 @endif
                 
                 @if(empty($user->address ?? auth()->user()->address))
-                <div class="profile-form-group">
-                    <label class="profile-form-label">
-                        <i class="bi bi-geo-alt-fill"></i>
-                        Alamat Lengkap <span class="required">*</span>
-                    </label>
-                    <textarea name="address" class="profile-form-input profile-form-textarea" 
-                              placeholder="Masukkan alamat lengkap Anda..." 
+                <div class="form-group-clean">
+                    <label class="form-label-clean">Alamat Lengkap</label>
+                    <textarea name="address" class="form-control-clean" rows="3" 
+                              placeholder="Kecamatan, Kota, Detail Lokasi..." 
                               required>{{ old('address', $user->address ?? '') }}</textarea>
                 </div>
                 @endif
@@ -491,14 +510,23 @@
                 <input type="hidden" name="address" value="{{ $user->address ?? auth()->user()->address }}">
                 @endif
                 
-                <button type="submit" class="profile-submit-btn">
-                    <i class="bi bi-check-circle-fill"></i>
-                    Simpan & Lanjutkan
+                <button type="submit" class="btn-submit-clean">
+                    Simpan dan Lanjutkan
                 </button>
             </form>
         </div>
     </div>
 </div>
+
+<script>
+    function closeProfileModal() {
+        const modal = document.getElementById('profileModal');
+        modal.style.opacity = '0';
+        setTimeout(() => {
+            modal.style.display = 'none';
+        }, 300);
+    }
+</script>
 @endif
 
 <div class="container-fluid">
@@ -515,11 +543,11 @@
     </div>
 
     @if($errors->any())
-        <div class="alert rounded-3" style="background-color: #fee2e2; color: #991b1b; border: 1px solid #ef4444; display: flex; align-items: flex-start; margin-bottom: 1rem;">
+        <div class="alert rounded-3 custom-alert-error">
             <i class="bi bi-exclamation-triangle-fill me-3 fs-4 mt-1"></i>
             <div>
-                <h6 class="fw-bold mb-1" style="color: #991b1b;">Terjadi Kesalahan!</h6>
-                <ul class="mb-0 ps-3 small" style="color: #7f1d1d;">
+                <h6 class="fw-bold mb-1">Terjadi Kesalahan!</h6>
+                <ul class="mb-0 ps-3 small">
                     @foreach($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach

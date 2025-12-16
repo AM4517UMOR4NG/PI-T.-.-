@@ -532,7 +532,9 @@ class RentalController extends Controller
             abort(403);
         }
         
-        $rental->load(['items', 'payments']);
+        // Refresh rental data from database to get latest delivery status
+        $rental->refresh();
+        $rental->load(['items', 'payments', 'deliverer']);
         
         // Load rentable items manually to prevent issues with missing rentables
         foreach ($rental->items as $item) {
@@ -981,6 +983,52 @@ class RentalController extends Controller
         
         return redirect()->route('pelanggan.rentals.show', $damageReport->rentalItem->rental)
             ->with('error', 'Pembayaran denda gagal atau dibatalkan.');
+    }
+
+    /**
+     * User konfirmasi sudah menerima barang dari kurir
+     * Waktu sewa akan dimulai setelah konfirmasi ini
+     */
+    public function confirmDeliveryReceipt(Rental $rental)
+    {
+        if ($rental->user_id !== auth()->id()) {
+            abort(403);
+        }
+        
+        // Harus dalam status menunggu_pengantaran
+        if ($rental->status !== 'menunggu_pengantaran') {
+            return back()->with('error', 'Penyewaan ini tidak dalam status menunggu pengantaran.');
+        }
+        
+        // Harus sudah diantarkan oleh kurir
+        if ($rental->delivered_at === null) {
+            return back()->with('error', 'Barang belum diantarkan oleh kurir. Silakan tunggu konfirmasi pengantaran dari admin.');
+        }
+        
+        // Hitung durasi rental dari start_at dan due_at yang sudah ada
+        $originalStartAt = $rental->start_at;
+        $originalDueAt = $rental->due_at;
+        $duration = $originalStartAt->diffInDays($originalDueAt);
+        
+        // Update rental: konfirmasi penerimaan, update waktu mulai, dan ubah status
+        $rental->update([
+            'delivery_confirmed_at' => now(),
+            'start_at' => now(), // Waktu sewa mulai sekarang
+            'due_at' => now()->addDays($duration), // Hitung ulang due_at berdasarkan durasi
+            'status' => 'sedang_disewa',
+        ]);
+        
+        \Log::info('Delivery confirmed by user - rental time started', [
+            'rental_id' => $rental->id,
+            'rental_kode' => $rental->kode,
+            'user_id' => auth()->id(),
+            'original_start_at' => $originalStartAt,
+            'new_start_at' => $rental->start_at,
+            'new_due_at' => $rental->due_at,
+            'duration_days' => $duration,
+        ]);
+        
+        return back()->with('success', 'Terima kasih! Penerimaan barang berhasil dikonfirmasi. Waktu sewa Anda dimulai sekarang hingga ' . $rental->due_at->format('d M Y H:i') . '.');
     }
 
     /**
