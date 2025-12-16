@@ -484,19 +484,20 @@
                 <div class="form-group-clean">
                     <label class="form-label-clean">Nomor Telepon / WhatsApp</label>
                     <input type="tel" name="phone" class="form-control-clean" 
-                           placeholder="08xxxxxxxxxx" 
-                           value="{{ old('phone', $user->phone ?? '') }}" 
-                           required pattern="[0-9]{10,15}"
-                           title="Masukkan nomor yang valid (10-15 digit)">
+                           placeholder="+628xxxxxxxxxx" 
+                           value="{{ old('phone', '+62') }}" 
+                           required pattern="\+62[0-9]{9,13}"
+                           title="Nomor harus dimulai dengan +62. Contoh: +6281234567890">
                 </div>
                 @endif
                 
                 @if(empty($user->address ?? auth()->user()->address))
                 <div class="form-group-clean">
-                    <label class="form-label-clean">Alamat Lengkap</label>
+                    <label class="form-label-clean">Alamat Lengkap (minimal 10 kata)</label>
                     <textarea name="address" class="form-control-clean" rows="3" 
-                              placeholder="Kecamatan, Kota, Detail Lokasi..." 
+                              placeholder="Contoh: Jl. Sudirman No. 123, RT 01 RW 02, Kelurahan Menteng, Kecamatan Menteng, Jakarta Pusat 10310" 
                               required>{{ old('address', $user->address ?? '') }}</textarea>
+                    <small class="text-muted">Tuliskan alamat lengkap termasuk nama jalan, nomor, RT/RW, kelurahan, kecamatan, kota, dan kode pos.</small>
                 </div>
                 @endif
                 

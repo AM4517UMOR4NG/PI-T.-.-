@@ -38,7 +38,8 @@
             
             <div class="mb-3">
                 <label class="form-label">Stok</label>
-                <input type="number" class="form-control" name="stok" value="{{ old('stok', $accessory->stok) }}" required>
+                <input type="number" class="form-control" name="stok" value="{{ old('stok', $accessory->stok) }}" required min="0"
+                    oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 @error('stok')
                     <div class="text-danger mt-1">{{ $message }}</div>
                 @enderror
@@ -46,7 +47,8 @@
             
             <div class="mb-3">
                 <label class="form-label">Harga/Hari</label>
-                <input type="number" step="0.01" class="form-control" name="harga_per_hari" value="{{ old('harga_per_hari', $accessory->harga_per_hari) }}" required>
+                <input type="number" step="1" min="0" class="form-control" name="harga_per_hari" value="{{ old('harga_per_hari', $accessory->harga_per_hari) }}" required
+                    oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 @error('harga_per_hari')
                     <div class="text-danger mt-1">{{ $message }}</div>
                 @enderror

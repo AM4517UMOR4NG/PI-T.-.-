@@ -35,26 +35,30 @@ class MidtransController extends Controller
             $grossAmount = $notification->gross_amount;
             $transactionId = $notification->transaction_id;
             $transactionTime = $notification->transaction_time;
+            $statusCode = $notification->status_code;
 
             // Log notification for debugging
             Log::info('Midtrans Notification Received', [
                 'order_id' => $orderId,
-                'transaction_status' => $transactionStatus,
-                'fraud_status' => $fraudStatus,
-                'payment_type' => $paymentType,
+                'status' => $transactionStatus,
+                'amount' => $grossAmount,
+                'raw_body' => $request->getContent(), // Log raw body for signature debug
             ]);
 
             // Verify signature hash
             $serverKey = config('midtrans.server_key');
             $signatureKey = $notification->signature_key ?? '';
             
-            $hashed = hash('sha512', $orderId . $notification->status_code . $grossAmount . $serverKey);
+            // Midtrans sends gross_amount as string (e.g. "10000.00"). 
+            // We must use it EXACTLY as received for signature verification.
+            $hashed = hash('sha512', $orderId . $statusCode . $grossAmount . $serverKey);
             
             if ($hashed !== $signatureKey) {
                 Log::warning('Invalid Midtrans signature', [
                     'order_id' => $orderId,
                     'expected' => $hashed,
                     'received' => $signatureKey,
+                    'input_str' => $orderId . $statusCode . $grossAmount . '[HIDDEN_KEY]'
                 ]);
                 return response()->json(['message' => 'Invalid signature'], 403);
             }
@@ -62,13 +66,39 @@ class MidtransController extends Controller
             DB::beginTransaction();
 
             // Find or create payment record
-            $payment = Payment::firstOrCreate(
-                ['order_id' => $orderId],
-                [
+            // We search by order_id. If not found, we create a new one.
+            // IMPORTANT: If creating, we must try to find the rental_id from the order_id string
+            $payment = Payment::where('order_id', $orderId)->first();
+
+            if (!$payment) {
+                // Payment record missing - this happens if webhook arrives before our app created the record
+                // or if the record creation failed but Midtrans flow continued.
+                
+                // Try to extract rental_id from order_id
+                $rentalId = null;
+                
+                // Pattern 1: ORD-YYYYMMDD-{rental_id}-{uniqid}
+                if (preg_match('/^ORD-\d{8}-(\d+)-/', $orderId, $matches)) {
+                    $rentalId = $matches[1];
+                } 
+                // Pattern 2: RENTAL-{rental_id}-{timestamp}
+                elseif (preg_match('/^RENTAL-(\d+)-/', $orderId, $matches)) {
+                    $rentalId = $matches[1];
+                }
+
+                $payment = Payment::create([
+                    'order_id' => $orderId,
+                    'rental_id' => $rentalId,
                     'method' => 'midtrans',
                     'amount' => $grossAmount,
-                ]
-            );
+                    'transaction_status' => $transactionStatus,
+                ]);
+
+                Log::info('Created new Payment record from webhook', [
+                    'order_id' => $orderId,
+                    'rental_id' => $rentalId,
+                ]);
+            }
 
             // Update payment with Midtrans data
             $notificationData = [
@@ -88,15 +118,14 @@ class MidtransController extends Controller
                 
                 if ($rental) {
                     $this->updateRentalStatus($rental, $transactionStatus, $fraudStatus, $grossAmount);
+                } else {
+                     Log::error('Rental not found for payment', ['rental_id' => $payment->rental_id]);
                 }
+            } else {
+                Log::error('Payment has no rental_id, cannot update rental status', ['payment_id' => $payment->id]);
             }
 
             DB::commit();
-
-            Log::info('Midtrans notification processed successfully', [
-                'order_id' => $orderId,
-                'payment_id' => $payment->id,
-            ]);
 
             return response()->json(['message' => 'Notification processed']);
 
@@ -229,6 +258,55 @@ class MidtransController extends Controller
             // Find payment record
             $payment = Payment::where('order_id', $orderId)->first();
             
+            // Authorization Check: Ensure user owns this payment/rental
+            if ($payment && $payment->rental_id) {
+                $rental = Rental::find($payment->rental_id);
+                if ($rental) {
+                    $user = auth()->user();
+                    // Allow if user is owner of rental OR user is admin/staff
+                    if ($rental->user_id !== $user->id && !$user->isAdmin() && !$user->isKasir()) {
+                        return response()->json(['message' => 'Unauthorized'], 403);
+                    }
+                }
+            } else {
+                // If payment not found yet, try to parse rental ID from order ID to check auth
+                $rentalId = null;
+                if (preg_match('/^ORD-\d{8}-(\d+)-/', $orderId, $matches) || preg_match('/^RENTAL-(\d+)-/', $orderId, $matches)) {
+                    $rentalId = $matches[1];
+                    $rental = Rental::find($rentalId);
+                    if ($rental) {
+                        $user = auth()->user();
+                        if ($rental->user_id !== $user->id && !$user->isAdmin() && !$user->isKasir()) {
+                            return response()->json(['message' => 'Unauthorized'], 403);
+                        }
+                    }
+                }
+            }
+            
+            if (!$payment) {
+                // Same recovery logic as notification
+                $rentalId = null;
+                
+                if (preg_match('/^ORD-\d{8}-(\d+)-/', $orderId, $matches)) {
+                    $rentalId = $matches[1];
+                } elseif (preg_match('/^RENTAL-(\d+)-/', $orderId, $matches)) {
+                    $rentalId = $matches[1];
+                }
+
+                $payment = Payment::create([
+                    'order_id' => $orderId,
+                    'rental_id' => $rentalId,
+                    'method' => 'midtrans',
+                    'amount' => $status->gross_amount,
+                    'transaction_status' => $status->transaction_status,
+                ]);
+
+                Log::info('Created new Payment record from checkStatus', [
+                    'order_id' => $orderId,
+                    'rental_id' => $rentalId,
+                ]);
+            }
+            
             if ($payment) {
                 // Update payment data
                 $payment->updateFromMidtrans([
@@ -250,6 +328,8 @@ class MidtransController extends Controller
                             $status->fraud_status ?? 'accept', 
                             $status->gross_amount
                         );
+                    } else {
+                         Log::error('Rental not found for payment in checkStatus', ['rental_id' => $payment->rental_id]);
                     }
                 }
             }

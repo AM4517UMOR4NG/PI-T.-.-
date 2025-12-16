@@ -30,6 +30,14 @@ class ImpersonateController extends Controller
         $adminId = session('impersonate_admin_id');
         if ($adminId) {
             $admin = User::find($adminId);
+            
+            // Null check: admin account might have been deleted
+            if (!$admin) {
+                session()->forget('impersonate_admin_id');
+                Auth::logout();
+                return redirect('/login')->with('error', 'Akun admin tidak ditemukan. Silakan login ulang.');
+            }
+            
             Auth::login($admin, true);
             session()->forget('impersonate_admin_id');
             return redirect('/dashboard/admin')->with('status', 'Kembali ke akun admin');

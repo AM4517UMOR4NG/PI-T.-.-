@@ -433,6 +433,29 @@ Sistem memiliki **4 role utama**:
 
 ---
 
+### 9. Manajemen Pengantaran (Delivery)
+| Aspek | Detail |
+|-------|--------|
+| **Route** | `GET kasir/deliveries`, `POST kasir/deliveries/{rental}/confirm` |
+| **Controller** | `Kasir\DeliveryController` |
+| **View** | `kasir/deliveries/index.blade.php` |
+
+**Fitur:**
+- ✅ Lihat daftar rental menunggu pengantaran
+- ✅ Lihat rental yang sudah diantar tapi belum dikonfirmasi user
+- ✅ Konfirmasi pengantaran dengan catatan opsional
+- ✅ Batalkan status pengantaran jika ada masalah
+- ✅ Statistik pengantaran (pending, awaiting confirmation, delivered today)
+
+**Flow Pengantaran:**
+1. `pending` → User belum bayar
+2. `menunggu_pengantaran` → User sudah bayar, menunggu diantar
+3. Kasir konfirmasi pengantaran → `delivered_at` terisi
+4. User konfirmasi penerimaan → `status: sedang_disewa`, waktu mulai terhitung
+5. Waktu sewa dimulai dari konfirmasi penerimaan, bukan dari pembayaran
+
+---
+
 ## 🛒 FITUR PELANGGAN
 
 ### 1. Dashboard Pelanggan
@@ -550,6 +573,27 @@ Sistem memiliki **4 role utama**:
 - ✅ Batalkan rental pending
 - ✅ Alasan pembatalan
 - ✅ Tidak bisa batalkan jika sudah dibayar
+
+---
+
+### 7.5 Konfirmasi Penerimaan Barang
+| Aspek | Detail |
+|-------|--------|
+| **Route** | `POST pelanggan/rentals/{rental}/confirm-delivery` |
+| **Controller** | `Pelanggan\RentalController@confirmDeliveryReceipt` |
+| **View** | `pelanggan/rentals/show.blade.php` (section pengantaran) |
+
+**Fitur:**
+- ✅ Konfirmasi barang sudah diterima dari kurir
+- ✅ Waktu sewa mulai terhitung setelah konfirmasi
+- ✅ Update start_at dan due_at ke waktu baru
+- ✅ Status berubah dari `menunggu_pengantaran` ke `sedang_disewa`
+
+**Flow:**
+1. Setelah pembayaran sukses, status = `menunggu_pengantaran`
+2. User melihat section pengantaran dengan spinner "Sedang diproses"
+3. Setelah kasir konfirmasi pengantaran, muncul tombol "Konfirmasi Sudah Menerima"
+4. User klik konfirmasi → waktu sewa mulai terhitung
 
 ---
 

@@ -31,7 +31,7 @@ use App\Http\Controllers\Admin\DamageReportController;
 
 // Midtrans webhook (must be outside auth middleware)
 Route::post('midtrans/notification', [MidtransController::class, 'notification'])->name('midtrans.notification');
-Route::get('midtrans/status/{orderId}', [MidtransController::class, 'checkStatus'])->name('midtrans.status');
+Route::get('midtrans/status/{orderId}', [MidtransController::class, 'checkStatus'])->middleware(['auth'])->name('midtrans.status');
 
 Route::get('/', function () {
     if (Auth::check()) {

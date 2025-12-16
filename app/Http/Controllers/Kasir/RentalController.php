@@ -26,7 +26,7 @@ class RentalController extends Controller
     public function create()
     {
         Gate::authorize('access-kasir');
-        $units = UnitPS::where('stok', '>', 0)->orderBy('nama')->get();
+        $units = UnitPS::where('stock', '>', 0)->orderBy('name')->get();
         $games = Game::where('stok', '>', 0)->orderBy('judul')->get();
         $accessories = Accessory::where('stok', '>', 0)->orderBy('nama')->get();
         $customers = \App\Models\User::where('role', 'pelanggan')->orderBy('name')->get();

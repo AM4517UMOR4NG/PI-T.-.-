@@ -28,16 +28,25 @@ class ProfileController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $user->id],
-            'phone' => ['required', 'string', 'max:30', 'regex:/^(\+62|62|0)[0-9]{8,15}$/'],
-            'address' => ['required', 'string', 'max:500', 'min:5'],
+            'phone' => ['required', 'string', 'max:30', 'regex:/^\+62[0-9]{9,13}$/'],
+            'address' => [
+                'required', 
+                'string', 
+                'max:500',
+                function ($attribute, $value, $fail) {
+                    $wordCount = str_word_count(trim($value));
+                    if ($wordCount < 10) {
+                        $fail('Alamat harus mengandung minimal 10 kata. Saat ini: ' . $wordCount . ' kata.');
+                    }
+                },
+            ],
             'current_password' => ['nullable', 'string'],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
             'redirect_back' => ['nullable', 'string'],
         ], [
             'phone.required' => 'Nomor HP wajib diisi untuk melakukan pemesanan.',
-            'phone.regex' => 'Format nomor HP tidak valid. Contoh: 081234567890 atau +6281234567890',
+            'phone.regex' => 'Nomor HP harus diawali dengan +62. Contoh: +6281234567890',
             'address.required' => 'Alamat wajib diisi untuk melakukan pemesanan.',
-            'address.min' => 'Alamat minimal 5 karakter.',
         ]);
 
         // Update basic info
