@@ -56,7 +56,7 @@ class StaffController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email', 'regex:/@gmail\.com$/i'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            // 'password' removed - auto generated
             'phone' => ['nullable', 'string', 'regex:/^[0-9+]{10,20}$/'],
             'address' => ['nullable', 'string', 'max:255'],
             'role' => ['required', 'in:admin,kasir,pemilik'],
@@ -65,35 +65,42 @@ class StaffController extends Controller
             'email.required' => 'Email wajib diisi.',
             'email.unique' => 'Email sudah terdaftar.',
             'email.regex' => 'Email harus menggunakan domain @gmail.com.',
-            'password.required' => 'Password wajib diisi.',
-            'password.min' => 'Password minimal 8 karakter.',
-            'password.confirmed' => 'Konfirmasi password tidak cocok.',
             'phone.regex' => 'Format nomor telepon tidak valid.',
             'address.max' => 'Alamat maksimal 255 karakter.',
         ]);
 
-        User::create([
+        // Auto-generate password
+        $generatedPassword = \Illuminate\Support\Str::password(10);
+
+        $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
+            'password' => Hash::make($generatedPassword),
             'phone' => $validated['phone'] ?? null,
             'address' => $validated['address'] ?? null,
             'role' => $validated['role'],
         ]);
 
+        // Send credentials via email
+        try {
+            \Illuminate\Support\Facades\Mail::to($user)->send(new \App\Mail\AccountCredentials($user, $generatedPassword));
+            $emailStatus = "Login info telah dikirim ke email.";
+        } catch (\Exception $e) {
+            \Log::error('Failed to send stats credentials: ' . $e->getMessage());
+            $emailStatus = "Gagal mengirim email (Cek log).";
+        }
+
         $roleRoute = $validated['role'];
         $roleDisplay = ucfirst($validated['role']);
         
-        if ($roleRoute == 'pemilik') {
-            return redirect()->route('admin.pemilik.index')
-                ->with('success', "✅ Akun {$roleDisplay} berhasil dibuat!");
-        } elseif ($roleRoute == 'admin') {
-            return redirect()->route('admin.admin.index')
-                ->with('success', "✅ Akun {$roleDisplay} berhasil dibuat!");
-        } else { // kasir
-            return redirect()->route('admin.kasir.index')
-                ->with('success', "✅ Akun {$roleDisplay} berhasil dibuat!");
-        }
+        $redirectRoute = match($roleRoute) {
+            'pemilik' => 'admin.pemilik.index',
+            'admin' => 'admin.admin.index',
+            default => 'admin.kasir.index'
+        };
+
+        return redirect()->route($redirectRoute)
+            ->with('success', "✅ Akun {$roleDisplay} berhasil dibuat! Password: {$generatedPassword}. {$emailStatus}");
     }
 
     // Specific methods for each role

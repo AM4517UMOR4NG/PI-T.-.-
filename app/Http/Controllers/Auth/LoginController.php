@@ -22,8 +22,17 @@ class LoginController extends Controller
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
+            $user = Auth::user();
 
-            $role = Auth::user()->role;
+            // Check if user is blocked
+            if (!$user->is_active) {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+                return back()->withErrors(['email' => 'Akun Anda telah diblokir. Silakan hubungi admin.']);
+            }
+
+            $role = $user->role;
             return match ($role) {
                 'admin' => redirect()->route('dashboard.admin'),
                 'kasir' => redirect()->route('dashboard.kasir'),
