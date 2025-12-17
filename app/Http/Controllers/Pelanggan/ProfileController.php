@@ -27,7 +27,7 @@ class ProfileController extends Controller
         
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $user->id],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $user->id, 'regex:/^[a-zA-Z0-9._%+-]+@gmail\.com$/'],
             'phone' => ['required', 'string', 'max:30', 'regex:/^\+62[0-9]{9,13}$/'],
             'address' => [
                 'required', 
@@ -44,6 +44,7 @@ class ProfileController extends Controller
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
             'redirect_back' => ['nullable', 'string'],
         ], [
+            'email.regex' => 'Email harus menggunakan @gmail.com',
             'phone.required' => 'Nomor HP wajib diisi untuk melakukan pemesanan.',
             'phone.regex' => 'Nomor HP harus diawali dengan +62. Contoh: +6281234567890',
             'address.required' => 'Alamat wajib diisi untuk melakukan pemesanan.',

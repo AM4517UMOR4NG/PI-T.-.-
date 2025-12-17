@@ -230,26 +230,52 @@ class RentalController extends Controller
                         'fine_description' => $fineDescription,
                     ]);
                     
-                    $totalDamageFine += $fine;
-                }
-                
-                if ($item->rentable) {
-                    // Check if it's UnitPS (uses 'stock') or other models (use 'stok')
-                    $isUnitPS = $item->rentable instanceof \App\Models\UnitPS;
-                    
-                    if ($isUnitPS) {
-                        $item->rentable->stock += $item->quantity;
+                    if ($condition === 'rusak') {
+                        $totalDamageFine += $fine;
+                        
+                        // Create Damage Report for damaged items
+                        \App\Models\DamageReport::create([
+                            'rental_item_id' => $item->id,
+                            'reported_by' => auth()->id(), // Kasir yang lapor/konfirmasi
+                            'description' => $fineDescription ?: 'Kerusakan dilaporkan saat pengembalian',
+                            'fine_amount' => $fine,
+                            'status' => 'pending', // Menunggu review Admin
+                            'reviewed_by' => null,
+                            'reviewed_at' => null,
+                        ]);
+
+                        // Stock Logic for Damaged Items:
+                        // Do NOT restore stock automatically.
+                        // Optionally update status of unit to 'maintenance' if it's a UnitPS
+                        if ($item->rentable_type === \App\Models\UnitPS::class) {
+                            $unit = $item->rentable;
+                            if ($unit) {
+                                $unit->status = 'maintenance';
+                                $unit->save();
+                            }
+                        }
                     } else {
-                        $item->rentable->stok += $item->quantity;
+                        // Condition matches 'baik'
+                        // Restore stock
+                         if ($item->rentable) {
+                            $isUnitPS = $item->rentable instanceof \App\Models\UnitPS;
+                            
+                            if ($isUnitPS) {
+                                $item->rentable->stock += $item->quantity;
+                                $item->rentable->status = 'available'; // Ensure available
+                            } else {
+                                $item->rentable->stok += $item->quantity;
+                            }
+                            
+                            $item->rentable->save();
+                            
+                            \Log::info('Stock restored by cashier confirmation', [
+                                'item_type' => get_class($item->rentable),
+                                'item_id' => $item->rentable->id,
+                                'quantity_restored' => $item->quantity,
+                            ]);
+                        }
                     }
-                    
-                    $item->rentable->save();
-                    
-                    \Log::info('Stock restored by cashier confirmation', [
-                        'item_type' => get_class($item->rentable),
-                        'item_id' => $item->rentable->id,
-                        'quantity_restored' => $item->quantity,
-                    ]);
                 }
             }
 
