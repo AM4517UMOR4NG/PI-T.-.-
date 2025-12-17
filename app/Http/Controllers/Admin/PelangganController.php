@@ -84,6 +84,18 @@ class PelangganController extends Controller
         $pelanggan->delete();
         return redirect()->route('admin.pelanggan.index')->with('status', 'Pelanggan dihapus');
     }
+
+    public function toggleBlock(User $pelanggan)
+    {
+        Gate::authorize('access-admin');
+        abort_unless($pelanggan->role === 'pelanggan', 404);
+
+        $pelanggan->is_active = !$pelanggan->is_active;
+        $pelanggan->save();
+
+        $status = $pelanggan->is_active ? 'diaktifkan kembali' : 'diblokir';
+        return redirect()->back()->with('status', "Akun pelanggan berhasil $status.");
+    }
 }
 
 

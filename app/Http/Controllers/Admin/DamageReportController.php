@@ -105,6 +105,16 @@ class DamageReportController extends Controller
             ]);
         });
 
+        // Send email if no fine imposed
+        if ($validated['fine_amount'] == 0 && $damageReport->reporter && $damageReport->reporter->email) {
+            try {
+                \Illuminate\Support\Facades\Mail::to($damageReport->reporter->email)->send(new \App\Mail\DamageReportResult($damageReport));
+                \Log::info('Damage report result email sent to: ' . $damageReport->reporter->email);
+            } catch (\Exception $e) {
+                \Log::error('Failed to send damage report result email: ' . $e->getMessage());
+            }
+        }
+
         return redirect()->route('admin.damage-reports.index')
             ->with('success', 'Laporan kerusakan berhasil direview. Denda sebesar Rp ' . number_format($validated['fine_amount'], 0, ',', '.') . ' telah ditetapkan.');
     }
