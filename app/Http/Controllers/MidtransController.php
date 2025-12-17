@@ -236,6 +236,16 @@ class MidtransController extends Controller
             'rental_kode' => $rental->kode,
             'paid_amount' => $amount,
         ]);
+
+        // Send Email Receipt
+        try {
+            if ($rental->customer && $rental->customer->email) {
+                \Illuminate\Support\Facades\Mail::to($rental->customer->email)->send(new \App\Mail\PaymentReceipt($rental));
+                Log::info('📧 Receipt sent to: ' . $rental->customer->email);
+            }
+        } catch (\Exception $e) {
+            Log::error('❌ Failed to send receipt email: ' . $e->getMessage());
+        }
     }
 
     /**

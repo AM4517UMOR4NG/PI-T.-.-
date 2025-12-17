@@ -37,10 +37,13 @@ class ProfileController extends Controller
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
-            'phone' => ['nullable', 'string', 'max:20'],
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id), 'regex:/^[a-zA-Z0-9._%+-]+@gmail\.com$/'],
+            'phone' => ['nullable', 'string', 'max:20', 'regex:/^[0-9+]*$/'],
             'address' => ['nullable', 'string', 'max:500'],
             'avatar' => ['nullable', 'image', 'max:2048'], // Max 2MB
+        ], [
+            'email.regex' => 'Email harus menggunakan @gmail.com',
+            'phone.regex' => 'Nomor telepon hanya boleh berisi angka',
         ]);
 
         if ($request->hasFile('avatar')) {
