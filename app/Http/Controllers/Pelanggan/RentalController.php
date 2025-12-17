@@ -97,7 +97,7 @@ class RentalController extends Controller
                     $price = $itemType === 'unitps' ? $item->price_per_hour : $item->harga_per_hari;
                     $stockField = $itemType === 'unitps' ? 'stock' : 'stok';
                     
-                    $cartItems = collect([[
+                    $cartItems = collect([(object) [
                         'name' => $name,
                         'type' => $itemType,
                         'price' => $price,
@@ -147,6 +147,44 @@ class RentalController extends Controller
             }
         }
         
+        // Langkah 3-4 UC006: Validasi stok untuk semua item di cart
+        $stockErrors = [];
+        foreach ($cartItems as $cartItem) {
+            $itemType = is_object($cartItem) ? $cartItem->type : ($cartItem['type'] ?? null);
+            $itemId = is_object($cartItem) ? $cartItem->item_id : ($cartItem['item_id'] ?? null);
+            $itemQty = is_object($cartItem) ? $cartItem->quantity : ($cartItem['quantity'] ?? 1);
+            $itemName = is_object($cartItem) ? $cartItem->name : ($cartItem['name'] ?? 'Item');
+            
+            if ($itemType && $itemId) {
+                $model = match($itemType) {
+                    'unitps' => UnitPS::class,
+                    'game' => Game::class,
+                    'accessory' => Accessory::class,
+                    default => null,
+                };
+                
+                if ($model) {
+                    $rentable = $model::find($itemId);
+                    if ($rentable) {
+                        $stockField = $itemType === 'unitps' ? 'stock' : 'stok';
+                        $availableStock = $rentable->$stockField ?? 0;
+                        
+                        if ($availableStock < $itemQty) {
+                            $stockErrors[] = "{$itemName} (stok tersedia: {$availableStock}, diminta: {$itemQty})";
+                        }
+                    } else {
+                        $stockErrors[] = "{$itemName} tidak ditemukan";
+                    }
+                }
+            }
+        }
+        
+        // Jika ada error stok, redirect dengan pesan error
+        if (!empty($stockErrors)) {
+            return redirect()->route('pelanggan.cart.index')
+                ->with('error', 'Stok tidak mencukupi untuk: ' . implode(', ', $stockErrors));
+        }
+        
         return view('pelanggan.rentals.create', [
             'cartItems' => $cartItems, 
             'directItem' => false,
@@ -180,21 +218,23 @@ class RentalController extends Controller
         
         $validated = $request->validate([
             'rental_date' => ['required', 'date', 'after_or_equal:today', 'before:+1 year'],
-            'return_date' => ['required', 'date', 'after:rental_date', 'before:+1 year'],
+            'duration' => ['required', 'integer', 'min:1', 'max:30'],
+            'delivery_method' => ['required', 'in:pickup,delivery'],
             'notes' => ['nullable', 'string', 'max:500'],
         ]);
         
-        // Additional business logic validation
+        // Calculate return date server-side based on duration
         $rentalDate = \Carbon\Carbon::parse($validated['rental_date']);
-        $returnDate = \Carbon\Carbon::parse($validated['return_date']);
-        $daysDiff = $rentalDate->diffInDays($returnDate);
+        $duration = (int) $validated['duration'];
+        $returnDate = $rentalDate->copy()->addDays($duration);
         
-        if ($daysDiff > 30) {
-            return back()->withErrors(['return_date' => 'Maksimal durasi sewa adalah 30 hari.'])->withInput();
-        }
+        // Add return_date to validated data
+        $validated['return_date'] = $returnDate->toDateString();
         
-        if ($daysDiff < 1) {
-            return back()->withErrors(['return_date' => 'Durasi sewa minimal 1 hari.'])->withInput();
+        // Hitung ongkos kirim berdasarkan metode pengiriman (langkah 10-12 UC006)
+        $shippingCost = 0;
+        if ($validated['delivery_method'] === 'delivery') {
+            $shippingCost = 15000; // Ongkir flat rate Rp 15.000
         }
 
         // Check if we need to create a temporary cart item (from direct item selection)
@@ -285,7 +325,7 @@ class RentalController extends Controller
         try {
             DB::beginTransaction();
 
-            // Create rental
+            // Create rental (langkah 15-17 UC006: Simpan rental + Generate kode RNT-XXX)
             $rental = Rental::create([
                 'user_id' => auth()->id(),
                 'start_at' => $validated['rental_date'],
@@ -293,6 +333,9 @@ class RentalController extends Controller
                 'status' => 'pending',
                 'notes' => $validated['notes'] ?? null,
                 'kode' => Rental::generateKodeUnik(),
+                'delivery_method' => $validated['delivery_method'],
+                'delivery_address' => $validated['delivery_method'] === 'delivery' ? $user->address : null,
+                'shipping_cost' => $shippingCost,
             ]);
 
             $totalAmount = 0;
@@ -392,8 +435,14 @@ class RentalController extends Controller
                 }
             }
 
-            // Update rental total
-            $rental->update(['total' => $totalAmount]);
+            // Update rental total (langkah 11-12 UC006: Hitung total + ongkir)
+            $subtotalAmount = $totalAmount;
+            $totalAmount = $subtotalAmount + $shippingCost;
+            $rental->update([
+                'subtotal' => $subtotalAmount,
+                'total' => $totalAmount,
+                'shipping_cost' => $shippingCost,
+            ]);
             
             // Midtrans: build params - gunakan total per item agar sesuai durasi
             // Load items separately to avoid potential relationship loading issues
@@ -437,6 +486,16 @@ class RentalController extends Controller
                     ]);
                     throw $e; // Re-throw to handle properly
                 }
+            }
+            
+            // Tambahkan ongkir sebagai item terpisah jika ada (Langkah 12 UC006)
+            if ($shippingCost > 0) {
+                $items[] = [
+                    'id' => 'shipping-cost',
+                    'price' => (int) $shippingCost,
+                    'quantity' => 1,
+                    'name' => 'Ongkos Kirim',
+                ];
             }
             
             $orderId = 'ORD-'.date('Ymd').'-'.$rental->id.'-'.substr(uniqid(), -5);
