@@ -135,8 +135,8 @@
                         @endphp
                         
                         @foreach($photos as $photo)
-                            <div class="photo-item" onclick="openPhotoModal('{{ $damageReport->{$photo['key']} ? asset('storage/' . $damageReport->{$photo['key']}) : '' }}')">
-                                @if($damageReport->{$photo['key']})
+                            <div class="photo-item" onclick="openPhotoModal('{{ ($damageReport->{$photo['key']} && \Illuminate\Support\Facades\Storage::disk('public')->exists($damageReport->{$photo['key']})) ? asset('storage/' . $damageReport->{$photo['key']}) : '' }}')">
+                                @if($damageReport->{$photo['key']} && \Illuminate\Support\Facades\Storage::disk('public')->exists($damageReport->{$photo['key']}))
                                     <img src="{{ asset('storage/' . $damageReport->{$photo['key']}) }}" alt="{{ $photo['label'] }}">
                                 @else
                                     <div class="d-flex align-items-center justify-content-center h-100 bg-light">
@@ -198,7 +198,7 @@
                     }
                 @endphp
                 <div class="info-row d-flex align-items-center">
-                    @if($itemImage)
+                    @if($itemImage && \Illuminate\Support\Facades\Storage::disk('public')->exists($itemImage))
                         <img src="{{ asset('storage/' . $itemImage) }}" class="rounded me-3" style="width: 60px; height: 60px; object-fit: cover;">
                     @else
                         <div class="rounded bg-light d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px;">
@@ -278,7 +278,9 @@
 
                         <div class="mb-3">
                             <label class="form-label fw-bold">Jumlah Denda (Rp) <span class="text-danger">*</span></label>
-                            <input type="number" name="fine_amount" class="form-control" min="0" step="1000" placeholder="Masukkan jumlah denda" value="{{ old('fine_amount', 0) }}" required>
+                            <input type="number" name="fine_amount" class="form-control" min="0" step="1000" placeholder="Masukkan jumlah denda" value="{{ old('fine_amount', 0) }}" required 
+                                oninput="if(this.value < 0) this.value = 0;" 
+                                onkeydown="return event.keyCode !== 69 && event.keyCode !== 189" >
                             @error('fine_amount')
                                 <div class="text-danger small mt-1">{{ $message }}</div>
                             @enderror
