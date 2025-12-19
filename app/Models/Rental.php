@@ -38,6 +38,8 @@ class Rental extends Model
         'delivered_by',
         'delivery_notes',
         'delivery_address',
+        'delivery_method',
+        'shipping_cost',
     ];
 
     protected $casts = [
@@ -113,20 +115,18 @@ class Rental extends Model
     }
 
     /**
-     * Generate kode transaksi unik 4 karakter (AA01, AB12, ...)
+     * Generate kode transaksi unik format RNT-XXX (sesuai diagram UC006)
      * Dengan database lock untuk mencegah race condition
      */
     public static function generateKodeUnik(): string
     {
         return \DB::transaction(function() {
-            $alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
             $maxTry = 100;
             
             for ($i = 0; $i < $maxTry; $i++) {
-                $huruf1 = $alphabet[rand(0,25)];
-                $huruf2 = $alphabet[rand(0,25)];
-                $angka = str_pad(strval(rand(1,99)), 2, '0', STR_PAD_LEFT);
-                $kode = $huruf1.$huruf2.$angka;
+                // Format: RNT-XXX (3 digit angka)
+                $angka = str_pad(strval(rand(1, 999)), 3, '0', STR_PAD_LEFT);
+                $kode = 'RNT-' . $angka;
                 
                 // Lock table untuk prevent race condition
                 if (!self::where('kode', $kode)->lockForUpdate()->exists()) {
@@ -134,8 +134,8 @@ class Rental extends Model
                 }
             }
             
-            // Fallback: timestamp-based unique code (lebih aman dari uniqid)
-            return strtoupper(substr(md5(microtime(true) . rand()), 0, 6));
+            // Fallback: RNT dengan timestamp untuk uniqueness
+            return 'RNT-' . strtoupper(substr(md5(microtime(true) . rand()), 0, 5));
         });
     }
 }
