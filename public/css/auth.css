@@ -28,6 +28,12 @@
     font-family: 'SST', 'Segoe UI', 'Roboto', sans-serif;
 }
 
+/* Hide default browser clear and reveal buttons */
+input::-ms-clear,
+input::-ms-reveal {
+    display: none;
+}
+
 body.auth-page {
     background: #f0f2f5;
     color: var(--text-primary);
@@ -284,7 +290,7 @@ body.auth-page {
     transform: translateY(-50%);
     background: none;
     border: none;
-    color: #666;
+    color: #a1a1aa;
     cursor: pointer;
     transition: var(--transition);
 }
@@ -456,6 +462,144 @@ body.auth-page {
     font-size: 0.85rem;
     margin-top: 6px;
     display: block;
+}
+
+/* Form Helper Text - White for dark background */
+.form-text {
+    color: #a1a1aa !important;
+    font-size: 0.85rem;
+    margin-top: 6px;
+    display: block;
+}
+
+.form-text.text-muted {
+    color: #a1a1aa !important;
+}
+
+.form-text.text-success {
+    color: #10b981 !important;
+}
+
+.form-text.text-danger {
+    color: #ef4444 !important;
+}
+
+/* Small text helper inside labels */
+.form-group label small,
+.form-group label .text-muted {
+    color: #a1a1aa !important;
+}
+
+/* Required asterisk */
+.form-group label .text-danger {
+    color: #ef4444 !important;
+}
+
+/* Password requirements list */
+.password-requirements {
+    color: #d4d4d8 !important;
+}
+
+.password-requirements small {
+    color: #a1a1aa !important;
+}
+
+.req-icon {
+    font-size: 6px;
+    margin-right: 6px;
+    color: #ef4444;
+    vertical-align: middle;
+}
+
+.req-icon.valid {
+    color: #10b981 !important;
+}
+
+/* Password strength bar */
+.password-strength-bar {
+    color: #a1a1aa;
+}
+
+.strength-meter {
+    height: 6px;
+    background: #333;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+
+.strength-fill {
+    height: 100%;
+    width: 0%;
+    transition: width 0.3s, background 0.3s;
+}
+
+.strength-weak {
+    background: #ef4444;
+    width: 25%;
+}
+
+.strength-fair {
+    background: #f59e0b;
+    width: 50%;
+}
+
+.strength-good {
+    background: #eab308;
+    width: 75%;
+}
+
+.strength-strong {
+    background: #10b981;
+    width: 100%;
+}
+
+#strength-text {
+    color: #a1a1aa !important;
+}
+
+/* Validation icons */
+.validation-icon {
+    display: none;
+    position: absolute;
+    right: 45px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.input-wrapper .form-control.is-valid~.valid-icon {
+    display: block;
+}
+
+.input-wrapper .form-control.is-invalid~.invalid-icon {
+    display: block;
+}
+
+.input-wrapper .form-control.is-valid~.valid-icon~.invalid-icon {
+    display: none;
+}
+
+/* Validation summary */
+.validation-summary {
+    padding: 10px;
+    background: rgba(239, 68, 68, 0.15);
+    border-radius: 8px;
+    text-align: center;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.validation-summary small {
+    color: #fca5a5 !important;
+}
+
+/* Auth divider text */
+.auth-divider span {
+    color: #a1a1aa !important;
+}
+
+/* Bottom links text */
+.auth-bottom-links {
+    color: #a1a1aa !important;
 }
 
 /* Responsive Design */

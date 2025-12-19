@@ -87,7 +87,7 @@
                                         <span class="input-group-text bg-transparent border-end-0">
                                             <i class="bi bi-envelope text-primary"></i>
                                         </span>
-                                        <input type="email" class="form-control border-start-0 ps-0 @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email', Auth::user()->email) }}" required>
+                                        <input type="email" class="form-control border-start-0 ps-0 @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email', Auth::user()->email) }}" required pattern="[a-zA-Z0-9._%+-]+@gmail\.com$" title="Email harus menggunakan @gmail.com">
                                     </div>
                                     @error('email')
                                         <div class="invalid-feedback d-block">{{ $message }}</div>
@@ -103,7 +103,7 @@
                                         <span class="input-group-text bg-transparent border-end-0">
                                             <i class="bi bi-telephone text-primary"></i>
                                         </span>
-                                        <input type="text" class="form-control border-start-0 ps-0 @error('phone') is-invalid @enderror" id="phone" name="phone" value="{{ old('phone', Auth::user()->phone) }}">
+                                        <input type="text" class="form-control border-start-0 ps-0 @error('phone') is-invalid @enderror" id="phone" name="phone" value="{{ old('phone', Auth::user()->phone) }}" oninput="this.value = this.value.replace(/[^0-9+]/g, '')">
                                     </div>
                                     @error('phone')
                                         <div class="invalid-feedback d-block">{{ $message }}</div>
@@ -178,6 +178,39 @@
             reader.readAsDataURL(input.files[0]);
         }
     }
+
+    // Email validation for @gmail.com on form submit
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form[action*="profile"]');
+        const emailInput = document.getElementById('email');
+        
+        if (form && emailInput) {
+            form.addEventListener('submit', function(e) {
+                const email = emailInput.value.trim();
+                if (!email.endsWith('@gmail.com')) {
+                    e.preventDefault();
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Format Email Salah',
+                            text: 'Email harus menggunakan @gmail.com',
+                            confirmButtonColor: '#0652DD',
+                            width: '320px',
+                            customClass: {
+                                popup: 'swal-small-popup',
+                                title: 'fs-6',
+                                htmlContainer: 'small'
+                            }
+                        });
+                    } else {
+                        alert('Email harus menggunakan @gmail.com');
+                    }
+                    emailInput.focus();
+                    return false;
+                }
+            });
+        }
+    });
 
     // Confirm delete avatar
     function confirmDeleteAvatar() {
