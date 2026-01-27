@@ -230,7 +230,6 @@ class DashboardController extends Controller
     {
         Gate::authorize('access-pelanggan');
         
-        // Get latest available items with stock > 0 for display on landing page
         $unitps = UnitPS::where('stock', '>', 0)
             ->orderByDesc('id')
             ->limit(8)
@@ -246,7 +245,29 @@ class DashboardController extends Controller
             ->limit(8)
             ->get();
             
-        return view('dashboards.pelanggan', compact('unitps', 'games', 'accessories'));
+        // Dashboard Stats
+        $activeRentals = Rental::where('user_id', auth()->id())
+            ->whereIn('status', ['menunggu_konfirmasi', 'sedang_disewa', 'menunggu_pengantaran'])
+            ->count();
+            
+        $totalSpent = Payment::whereHas('rental', function($q) {
+                $q->where('user_id', auth()->id());
+            })->sum('amount');
+            
+        $totalTransactions = Rental::where('user_id', auth()->id())->count();
+        
+        $pendingPaymentsCount = Rental::where('user_id', auth()->id())
+            ->where('status', 'menunggu_pembayaran')
+            ->count();
+            
+        $latestRental = Rental::where('user_id', auth()->id())
+            ->latest()
+            ->first();
+
+        return view('dashboards.pelanggan', compact(
+            'unitps', 'games', 'accessories', 
+            'activeRentals', 'totalSpent', 'totalTransactions', 'pendingPaymentsCount', 'latestRental'
+        ));
     }
     
     public function galleryShowcase()
@@ -301,6 +322,159 @@ class DashboardController extends Controller
             'revenueTotal', 'revenueToday', 'revenueMonth',
             'rentalsTotal', 'rentalsActive', 'rentalsReturned',
             'latestPayments'
+        ));
+    }
+
+    public function leaderboard()
+    {
+        // Top 5 Unit PS Renters
+        $topPsRenters = \App\Models\RentalItem::selectRaw('users.name, users.avatar, count(rental_items.id) as total_rents')
+            ->join('rentals', 'rental_items.rental_id', '=', 'rentals.id')
+            ->join('users', 'rentals.user_id', '=', 'users.id')
+            ->where('rental_items.rentable_type', \App\Models\UnitPS::class)
+            ->where('rentals.status', 'selesai')
+            ->groupBy('users.id', 'users.name', 'users.avatar')
+            ->orderByDesc('total_rents')
+            ->limit(5)
+            ->get();
+
+        // Top 5 Game Renters
+        $topGameRenters = \App\Models\RentalItem::selectRaw('users.name, users.avatar, count(rental_items.id) as total_rents')
+            ->join('rentals', 'rental_items.rental_id', '=', 'rentals.id')
+            ->join('users', 'rentals.user_id', '=', 'users.id')
+            ->where('rental_items.rentable_type', \App\Models\Game::class)
+            ->where('rentals.status', 'selesai')
+            ->groupBy('users.id', 'users.name', 'users.avatar')
+            ->orderByDesc('total_rents')
+            ->limit(5)
+            ->get();
+
+        // Top 5 Accessory Renters
+        $topAccRenters = \App\Models\RentalItem::selectRaw('users.name, users.avatar, count(rental_items.id) as total_rents')
+            ->join('rentals', 'rental_items.rental_id', '=', 'rentals.id')
+            ->join('users', 'rentals.user_id', '=', 'users.id')
+            ->where('rental_items.rentable_type', \App\Models\Accessory::class)
+            ->where('rentals.status', 'selesai')
+            ->groupBy('users.id', 'users.name', 'users.avatar')
+            ->orderByDesc('total_rents')
+            ->limit(5)
+            ->get();
+
+        // Top 5 Spenders (Sultans)
+        $topSpenders = \App\Models\Payment::selectRaw('users.name, users.avatar, sum(payments.amount) as total_spent')
+            ->join('rentals', 'payments.rental_id', '=', 'rentals.id')
+            ->join('users', 'rentals.user_id', '=', 'users.id')
+            ->groupBy('users.id', 'users.name', 'users.avatar')
+            ->orderByDesc('total_spent')
+            ->limit(5)
+            ->get();
+
+        return view('pages.leaderboard', compact('topPsRenters', 'topGameRenters', 'topAccRenters', 'topSpenders'));
+    }
+
+    public function myCard()
+    {
+        Gate::authorize('access-pelanggan');
+        
+        $user = auth()->user();
+        
+        // 1. Calculate Stats Base
+        $totalRents = Rental::where('user_id', $user->id)->where('status', 'selesai')->count();
+        $totalSpent = Payment::whereHas('rental', function ($q) use ($user) {
+            $q->where('user_id', $user->id);
+        })->whereIn('transaction_status', ['capture', 'settlement'])->sum('amount');
+        
+        // 2. Count Rents by Category
+        $rentals = RentalItem::whereHas('rental', function ($q) use ($user) {
+            $q->where('user_id', $user->id)->where('status', 'selesai');
+        })->get();
+
+        $psCount = $rentals->where('rentable_type', \App\Models\UnitPS::class)->count();
+        $gameCount = $rentals->where('rentable_type', \App\Models\Game::class)->count();
+        $accCount = $rentals->where('rentable_type', \App\Models\Accessory::class)->count();
+        $totalItems = $psCount + $gameCount + $accCount;
+
+        // 3. XP Calculation
+        // 1 Rent = 100 XP
+        // 1000 IDR = 1 XP
+        $xpFromRents = $totalItems * 100;
+        $xpFromSpend = floor($totalSpent / 1000);
+        $totalXP = $xpFromRents + $xpFromSpend;
+
+        // 4. Determine Level
+        $levels = [
+            'Iron' => 0,
+            'Bronze' => 1000,
+            'Silver' => 5000,
+            'Gold' => 10000,
+            'Platinum' => 25000,
+            'Diamond' => 50000,
+            'Sultan' => 100000
+        ];
+
+        $currentLevel = 'Iron';
+        $nextLevelXP = 1000;
+        
+        foreach ($levels as $level => $minXP) {
+            if ($totalXP >= $minXP) {
+                $currentLevel = $level;
+            } else {
+                $nextLevelXP = $minXP;
+                break;
+            }
+        }
+        
+        // Handle max level case
+        if ($currentLevel === 'Sultan') {
+            $nextLevelXP = $totalXP; // Full bar
+        }
+
+        // 5. Determine Class
+        // Default
+        $rpgClass = 'Novice';
+        $description = 'Newcomer to the world of gaming.';
+        
+        if ($totalItems > 0) {
+            if ($psCount >= $gameCount && $psCount >= $accCount) {
+                $rpgClass = 'Console Warlord';
+                $description = 'A master of hardware, commanding the most powerful consoles.';
+            } elseif ($gameCount >= $psCount && $gameCount >= $accCount) {
+                $rpgClass = 'Disc Collector';
+                $description = 'A lore-seeker who has played through countless worlds.';
+            } elseif ($accCount >= $psCount && $accCount >= $gameCount) {
+                $rpgClass = 'Gear Master';
+                $description = 'Believes that true skill comes from the best peripherals.';
+            } 
+            
+            // Special: Balanced
+            $max = max($psCount, $gameCount, $accCount);
+            $min = min($psCount, $gameCount, $accCount);
+            if ($totalItems > 5 && ($max - $min) <= 2) {
+                $rpgClass = 'Jack of All Trades';
+                $description = 'Versatile and adaptable, comfortable in any gaming scenario.';
+            }
+        }
+
+        // 6. RPG Stats (0-100)
+        // STR = Console usage
+        // INT = Game knowledge
+        // DEX = Accessory usage
+        // LUCK = Random factor seeded by User ID + Date (Daily Luck) to make it fun
+        
+        $totalForStats = $totalItems > 0 ? $totalItems : 1;
+        $str = min(100, round(($psCount / $totalForStats) * 100) + 20); // Base 20
+        $int = min(100, round(($gameCount / $totalForStats) * 100) + 20);
+        $dex = min(100, round(($accCount / $totalForStats) * 100) + 20);
+        
+        srand($user->id + date('Ymd'));
+        $luck = rand(10, 99);
+        srand(); // Reset
+
+        return view('pages.gamer_card', compact(
+            'user', 'totalXP', 'currentLevel', 'nextLevelXP', 
+            'rpgClass', 'description', 
+            'str', 'int', 'dex', 'luck',
+            'totalItems', 'totalSpent'
         ));
     }
 }
