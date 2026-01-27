@@ -278,13 +278,19 @@
 
                         <div class="mb-3">
                             <label class="form-label fw-bold">Jumlah Denda (Rp) <span class="text-danger">*</span></label>
-                            <input type="number" name="fine_amount" class="form-control" min="0" step="1000" placeholder="Masukkan jumlah denda" value="{{ old('fine_amount', 0) }}" required 
+                            @if($damageReport->rentalItem && $damageReport->rentalItem->fine > 0)
+                                <div class="alert alert-info mb-2">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    <strong>Denda dari Kasir:</strong> Rp {{ number_format($damageReport->rentalItem->fine, 0, ',', '.') }}
+                                </div>
+                            @endif
+                            <input type="number" name="fine_amount" class="form-control" min="0" step="1000" placeholder="Masukkan jumlah denda" value="{{ old('fine_amount', $damageReport->rentalItem->fine ?? $damageReport->fine_amount ?? 0) }}" required 
                                 oninput="if(this.value < 0) this.value = 0;" 
                                 onkeydown="return event.keyCode !== 69 && event.keyCode !== 189" >
                             @error('fine_amount')
                                 <div class="text-danger small mt-1">{{ $message }}</div>
                             @enderror
-                            <small class="text-muted">Masukkan 0 jika tidak ada denda</small>
+                            <small class="text-muted">Masukkan 0 jika tidak ada denda. Nilai ini sudah diisi otomatis dari input Kasir.</small>
                         </div>
 
                         <div class="mb-4">
