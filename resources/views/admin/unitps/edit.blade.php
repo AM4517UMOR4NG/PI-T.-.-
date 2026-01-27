@@ -46,6 +46,8 @@
                 <div class="input-group">
                     <span class="input-group-text">Rp</span>
                     <input type="number" step="1" min="0" name="harga_per_jam"
+                        oninput="if(this.value < 0) this.value = 0;" 
+                        onkeydown="return event.keyCode !== 69 && event.keyCode !== 189"
                         value="{{ old('harga_per_jam', $unit->harga_per_jam) }}" required class="form-control"
                         oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 </div>
@@ -56,6 +58,8 @@
             <div class="col-md-4">
                 <label class="form-label">Stok</label>
                 <input type="number" min="0" name="stok" value="{{ old('stok', $unit->stok) }}" required class="form-control"
+                    oninput="if(this.value < 0) this.value = 0;" 
+                    onkeydown="return event.keyCode !== 69 && event.keyCode !== 189"
                     oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 @error('stok')
                     <div class="text-danger small">{{ $message }}</div>

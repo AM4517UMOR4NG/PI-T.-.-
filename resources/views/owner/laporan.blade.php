@@ -8,11 +8,20 @@
             <p class="text-muted mb-0">Riwayat lengkap penyewaan dan status transaksi.</p>
         </div>
         <div class="d-flex gap-2">
+            <!-- Excel Export -->
             <form action="{{ route('pemilik.laporan.export') }}" method="GET" class="d-flex gap-2">
                 <input type="hidden" name="format" value="xlsx">
                 <input type="hidden" name="dari" value="{{ request('dari') }}">
                 <input type="hidden" name="sampai" value="{{ request('sampai') }}">
                 <button type="submit" class="btn btn-success btn-sm shadow-sm"><i class="bi bi-file-earmark-excel me-2"></i>Export Excel</button>
+            </form>
+            
+            <!-- PDF Export -->
+            <form action="{{ route('pemilik.laporan.export') }}" method="GET" class="d-flex gap-2">
+                <input type="hidden" name="format" value="pdf">
+                <input type="hidden" name="dari" value="{{ request('dari') }}">
+                <input type="hidden" name="sampai" value="{{ request('sampai') }}">
+                <button type="submit" class="btn btn-danger btn-sm shadow-sm"><i class="bi bi-file-earmark-pdf me-2"></i>Export PDF</button>
             </form>
         </div>
     </div>
@@ -20,7 +29,7 @@
     <!-- Filters Card -->
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-body p-4">
-            <form action="{{ route('pemilik.laporan_transaksi') }}" method="GET">
+            <form action="{{ route('pemilik.laporan_transaksi') }}" method="GET" id="filterForm">
                 <div class="row g-3 align-items-end">
                     <div class="col-md-3">
                         <label class="form-label text-muted small fw-bold text-uppercase ls-1">Dari Tanggal</label>
@@ -142,13 +151,86 @@
             letter-spacing: 1px;
         }
         .form-control, .form-select {
-            border-color: var(--card-border);
-            background-color: var(--bg-light);
-            color: var(--text-main);
+            border-color: var(--card-border, #d1d5db);
+            background-color: var(--input-bg, #f8fafc);
+            color: var(--text-main, #1f2937);
         }
         .form-control:focus, .form-select:focus {
-            border-color: var(--primary);
+            border-color: var(--primary, #0652DD);
             box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.25);
+            background-color: var(--input-bg, #f8fafc);
+            color: var(--text-main, #1f2937);
+        }
+        /* Dark mode fixes */
+        [data-theme="dark"] .card {
+            background: var(--card-bg, #1e293b) !important;
+            border-color: var(--card-border, rgba(255,255,255,0.1)) !important;
+        }
+        [data-theme="dark"] .form-control,
+        [data-theme="dark"] .form-select {
+            background-color: rgba(255,255,255,0.05) !important;
+            border-color: rgba(255,255,255,0.15) !important;
+            color: #f1f5f9 !important;
+        }
+        [data-theme="dark"] .form-control::placeholder {
+            color: #94a3b8;
+        }
+        [data-theme="dark"] .form-control:focus,
+        [data-theme="dark"] .form-select:focus {
+            background-color: rgba(255,255,255,0.08) !important;
+            border-color: #0652DD !important;
+            color: #f1f5f9 !important;
+        }
+        [data-theme="dark"] .form-label {
+            color: #94a3b8 !important;
+        }
+        [data-theme="dark"] .table {
+            --bs-table-bg: var(--card-bg, #1e293b);
+            --bs-table-color: var(--text-main, #f1f5f9);
+        }
+        [data-theme="dark"] .table thead {
+            background: rgba(255,255,255,0.05) !important;
+        }
+        [data-theme="dark"] .table thead th {
+            color: #94a3b8 !important;
+            background: rgba(255,255,255,0.05) !important;
+        }
+        [data-theme="dark"] .table tbody tr {
+            border-color: rgba(255,255,255,0.1) !important;
+        }
+        [data-theme="dark"] .table tbody tr:hover {
+            background: rgba(255,255,255,0.05) !important;
+        }
+        [data-theme="dark"] .bg-light {
+            background: rgba(255,255,255,0.05) !important;
         }
     </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Date Filter Validation
+            const dariInput = document.querySelector('#filterForm input[name="dari"]');
+            const sampaiInput = document.querySelector('#filterForm input[name="sampai"]');
+
+            if (dariInput && sampaiInput) {
+                // Set initial constraints
+                if (dariInput.value) sampaiInput.min = dariInput.value;
+                if (sampaiInput.value) dariInput.max = sampaiInput.value;
+
+                // Update constraints on change
+                dariInput.addEventListener('change', function() {
+                    sampaiInput.min = this.value;
+                    if (sampaiInput.value && sampaiInput.value < this.value) {
+                        sampaiInput.value = this.value;
+                    }
+                });
+
+                sampaiInput.addEventListener('change', function() {
+                    dariInput.max = this.value;
+                    if (dariInput.value && dariInput.value > this.value) {
+                        dariInput.value = this.value;
+                    }
+                });
+            }
+        });
+    </script>
 @endsection

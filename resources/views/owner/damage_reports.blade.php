@@ -590,6 +590,8 @@
                         <td class="text-end">
                             @if($item->fine > 0)
                                 <span class="fine-amount">Rp {{ number_format($item->fine, 0, ',', '.') }}</span>
+                            @elseif($item->rental->status === 'selesai' || $item->rental->status === 'paid')
+                                <span class="badge bg-secondary bg-opacity-10 text-secondary">Tidak ada denda</span>
                             @else
                                 <span class="fine-badge">Belum ditentukan</span>
                             @endif

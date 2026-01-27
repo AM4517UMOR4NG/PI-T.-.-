@@ -28,6 +28,22 @@
         <i class="bi bi-headset"></i>
         <span>{{ __('dashboard.rent_accessory') }}</span>
     </a>
+
+    <div class="sidebar-heading">Fitur</div>
+    
+    <a href="{{ route('leaderboard.index') }}" class="nav-link {{ request()->routeIs('leaderboard.index') ? 'active' : '' }}" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Leaderboard">
+        <i class="bi bi-trophy"></i>
+        <span>Leaderboard</span>
+    </a>
+    <a href="{{ route('gamer.card') }}" class="nav-link {{ request()->routeIs('gamer.card') ? 'active' : '' }}" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Kartu Member">
+        <i class="bi bi-person-vcard"></i>
+        <span>Kartu Member <span class="badge bg-warning text-dark ms-1" style="font-size: 0.6rem;">NEW</span></span>
+    </a>
+    <a href="{{ route('gacha.index') }}" class="nav-link {{ request()->routeIs('gacha.*') ? 'active' : '' }}" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Daily Gacha">
+        <i class="bi bi-gift"></i>
+        <span>Daily Gacha <span class="badge bg-danger text-white ms-1" style="animation: pulse 1s infinite;">HOT</span></span>
+    </a>
+
     
     <div class="sidebar-heading">{{ __('dashboard.transactions') }}</div>
 
@@ -51,6 +67,11 @@
 @push('styles')
 <style>
     /* Premium Card Enhancements */
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
     .card {
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         background-color: var(--card-bg);

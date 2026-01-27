@@ -17,6 +17,12 @@
                 <input type="hidden" name="sampai" value="{{ $sampai ?? '' }}">
                 <button type="submit" class="btn btn-outline-success btn-sm shadow-sm"><i class="bi bi-file-earmark-excel me-2"></i>Export Excel</button>
             </form>
+            <form action="{{ route('pemilik.laporan.export') }}" method="GET" class="d-flex gap-2">
+                <input type="hidden" name="format" value="pdf">
+                <input type="hidden" name="dari" value="{{ $dari ?? '' }}">
+                <input type="hidden" name="sampai" value="{{ $sampai ?? '' }}">
+                <button type="submit" class="btn btn-outline-danger btn-sm shadow-sm"><i class="bi bi-file-earmark-pdf me-2"></i>Export PDF</button>
+            </form>
         </div>
     </div>
 
@@ -344,6 +350,31 @@
     <script>
         // Initialize the chart
         document.addEventListener('DOMContentLoaded', function() {
+            // Date Filter Validation
+            const dariInput = document.querySelector('#filterCollapse input[name="dari"]');
+            const sampaiInput = document.querySelector('#filterCollapse input[name="sampai"]');
+
+            if (dariInput && sampaiInput) {
+                // Set initial constraints
+                if (dariInput.value) sampaiInput.min = dariInput.value;
+                if (sampaiInput.value) dariInput.max = sampaiInput.value;
+
+                // Update constraints on change
+                dariInput.addEventListener('change', function() {
+                    sampaiInput.min = this.value;
+                    if (sampaiInput.value && sampaiInput.value < this.value) {
+                        sampaiInput.value = this.value;
+                    }
+                });
+
+                sampaiInput.addEventListener('change', function() {
+                    dariInput.max = this.value;
+                    if (dariInput.value && dariInput.value > this.value) {
+                        dariInput.value = this.value;
+                    }
+                });
+            }
+
             // Get theme colors
             const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
             const textColor = isDark ? '#94a3b8' : '#64748b';

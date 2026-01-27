@@ -35,11 +35,13 @@
                             </td>
                             <td class="text-end">
                                 <a class="btn btn-sm btn-warning me-1" href="{{ route('admin.' . $role . '.edit', $user) }}"><i class="bi bi-pencil-square"></i></a>
-                                <form action="{{ route('admin.' . $role . '.destroy', $user) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus staff?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
-                                </form>
+                                @if(auth()->id() !== $user->id)
+                                    <form action="{{ route('admin.' . $role . '.destroy', $user) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus staff?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
+                                    </form>
+                                @endif
                             </td>
                         </tr>
                     @empty

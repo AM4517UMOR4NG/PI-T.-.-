@@ -177,25 +177,48 @@
     .damage-detail {
         margin-top: 0.5rem;
         padding: 0.75rem;
-        background: rgba(255,255,255,0.5);
+        background: linear-gradient(135deg, #450a0a 0%, #7f1d1d 100%);
         border-radius: 8px;
         font-size: 0.8rem;
+        border: 1px solid #991b1b;
     }
     .damage-detail .label {
         font-weight: 600;
-        color: #991b1b;
+        color: #fca5a5;
         margin-bottom: 0.25rem;
     }
     .damage-detail .value {
-        color: #7f1d1d;
+        color: #fef2f2;
     }
     
     /* Dark mode */
+    [data-theme="dark"] .detail-card {
+        background: var(--card-bg, #1e293b);
+    }
+    [data-theme="dark"] .detail-card-header {
+        border-color: rgba(255,255,255,0.1);
+    }
+    [data-theme="dark"] .detail-card-header h6 {
+        color: #f1f5f9;
+    }
     [data-theme="dark"] .item-row.header {
         background: rgba(255,255,255,0.05);
+        color: #94a3b8;
+    }
+    [data-theme="dark"] .item-row {
+        border-color: rgba(255,255,255,0.1);
     }
     [data-theme="dark"] .item-row.damaged {
         background: linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(220, 38, 38, 0.1) 100%);
+    }
+    [data-theme="dark"] .item-name {
+        color: #f1f5f9;
+    }
+    [data-theme="dark"] .item-meta {
+        color: #94a3b8;
+    }
+    [data-theme="dark"] .price-text {
+        color: #f1f5f9;
     }
     [data-theme="dark"] .payment-box {
         background: rgba(255,255,255,0.05);
@@ -205,6 +228,12 @@
         background: linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(220, 38, 38, 0.1) 100%);
         border-color: rgba(220, 38, 38, 0.3);
     }
+    [data-theme="dark"] .payment-label {
+        color: #94a3b8;
+    }
+    [data-theme="dark"] .payment-value {
+        color: #f1f5f9;
+    }
     [data-theme="dark"] .condition-badge.rusak {
         background: rgba(220, 38, 38, 0.2);
         border-color: rgba(220, 38, 38, 0.4);
@@ -212,6 +241,96 @@
     [data-theme="dark"] .condition-badge.baik {
         background: rgba(5, 150, 105, 0.2);
         border-color: rgba(5, 150, 105, 0.4);
+    }
+    [data-theme="dark"] .type-badge.unitps {
+        background: rgba(29, 78, 216, 0.2);
+        color: #60a5fa;
+    }
+    [data-theme="dark"] .type-badge.game {
+        background: rgba(8, 145, 178, 0.2);
+        color: #22d3ee;
+    }
+    [data-theme="dark"] .type-badge.accessory {
+        background: rgba(75, 85, 99, 0.3);
+        color: #9ca3af;
+    }
+    [data-theme="dark"] .status-alert.success {
+        background: linear-gradient(135deg, rgba(5, 150, 105, 0.2) 0%, rgba(5, 150, 105, 0.15) 100%);
+        border-color: rgba(5, 150, 105, 0.4);
+    }
+    [data-theme="dark"] .status-alert.success .status-text h6,
+    [data-theme="dark"] .status-alert.success .status-text p {
+        color: #34d399 !important;
+    }
+    [data-theme="dark"] .status-alert.warning {
+        background: linear-gradient(135deg, rgba(217, 119, 6, 0.2) 0%, rgba(217, 119, 6, 0.15) 100%);
+        border-color: rgba(217, 119, 6, 0.4);
+    }
+    [data-theme="dark"] .status-alert.warning .status-text h6,
+    [data-theme="dark"] .status-alert.warning .status-text p {
+        color: #fbbf24 !important;
+    }
+    [data-theme="dark"] .status-alert.danger {
+        background: linear-gradient(135deg, rgba(220, 38, 38, 0.2) 0%, rgba(220, 38, 38, 0.15) 100%);
+        border-color: rgba(220, 38, 38, 0.4);
+    }
+    [data-theme="dark"] .status-alert.danger .status-text h6,
+    [data-theme="dark"] .status-alert.danger .status-text p {
+        color: #f87171 !important;
+    }
+    [data-theme="dark"] .damage-detail {
+        background: linear-gradient(135deg, #450a0a 0%, #7f1d1d 100%) !important;
+        border: 1px solid #b91c1c !important;
+    }
+    [data-theme="dark"] .damage-detail .label {
+        color: #fecaca !important;
+    }
+    [data-theme="dark"] .damage-detail .value {
+        color: #ffffff !important;
+    }
+    [data-theme="dark"] .item-row.damaged {
+        background: linear-gradient(135deg, rgba(127, 29, 29, 0.25) 0%, rgba(153, 27, 27, 0.15) 100%) !important;
+    }
+    /* Dark mode for timeline boxes */
+    [data-theme="dark"] .timeline-box-blue {
+        background: linear-gradient(135deg, rgba(6, 82, 221, 0.2) 0%, rgba(30, 64, 255, 0.15) 100%) !important;
+        border-color: rgba(6, 82, 221, 0.4) !important;
+    }
+    [data-theme="dark"] .timeline-box-blue small {
+        color: #60a5fa !important;
+    }
+    [data-theme="dark"] .timeline-box-blue .fw-bold {
+        color: #93c5fd !important;
+    }
+    [data-theme="dark"] .timeline-box-red {
+        background: linear-gradient(135deg, rgba(220, 38, 38, 0.2) 0%, rgba(220, 38, 38, 0.15) 100%) !important;
+        border-color: rgba(220, 38, 38, 0.4) !important;
+    }
+    [data-theme="dark"] .timeline-box-red small {
+        color: #f87171 !important;
+    }
+    [data-theme="dark"] .timeline-box-red .fw-bold {
+        color: #fca5a5 !important;
+    }
+    [data-theme="dark"] .timeline-box-green {
+        background: linear-gradient(135deg, rgba(5, 150, 105, 0.2) 0%, rgba(5, 150, 105, 0.15) 100%) !important;
+        border-color: rgba(5, 150, 105, 0.4) !important;
+    }
+    [data-theme="dark"] .timeline-box-green small {
+        color: #34d399 !important;
+    }
+    [data-theme="dark"] .timeline-box-green .fw-bold {
+        color: #6ee7b7 !important;
+    }
+    /* Dark mode for customer info boxes */
+    [data-theme="dark"] .info-box {
+        background: rgba(255,255,255,0.05) !important;
+    }
+    [data-theme="dark"] .info-box small {
+        color: #94a3b8 !important;
+    }
+    [data-theme="dark"] .info-box .fw-medium {
+        color: #f1f5f9 !important;
     }
     
     @media (max-width: 768px) {
@@ -289,9 +408,9 @@
                                     <i class="bi bi-exclamation-circle"></i> RUSAK
                                 </span>
                                 @if($item->fine_description)
-                                    <div class="damage-detail">
-                                        <div class="label">Keterangan:</div>
-                                        <div class="value">{{ $item->fine_description }}</div>
+                                    <div class="damage-detail" style="background: linear-gradient(135deg, #450a0a 0%, #7f1d1d 100%); border: 1px solid #b91c1c;">
+                                        <div class="label" style="color: #fecaca;">Keterangan:</div>
+                                        <div class="value" style="color: #ffffff;">{{ $item->fine_description }}</div>
                                     </div>
                                 @endif
                             @elseif($item->condition === 'baik')
@@ -422,8 +541,8 @@
                     </div>
 
                     @if($rental->status == 'menunggu_konfirmasi')
-                        <div class="p-3 rounded-3 mb-3 text-start" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border: 1px solid #fcd34d;">
-                            <small style="color: #92400e;"><i class="bi bi-info-circle me-1"></i> Pelanggan telah mengajukan pengembalian. Cek barang sebelum konfirmasi.</small>
+                        <div class="p-3 rounded-3 mb-3 text-start" style="background: linear-gradient(135deg, #78350f 0%, #92400e 100%); border: 1px solid #b45309;">
+                            <small style="color: #fef3c7;"><i class="bi bi-info-circle me-1"></i> Pelanggan telah mengajukan pengembalian. Cek barang sebelum konfirmasi.</small>
                         </div>
                         <a href="{{ route('kasir.rentals.return', $rental) }}" class="btn w-100 fw-bold py-2" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; border: none; border-radius: 10px;">
                             <i class="bi bi-clipboard-check me-2"></i>Cek Kondisi & Konfirmasi
@@ -453,14 +572,14 @@
                         </div>
                     </div>
                     <div class="d-flex flex-column gap-3">
-                        <div class="d-flex align-items-center gap-3 p-3 rounded-2" style="background: var(--bg-light, #f8fafc);">
+                        <div class="info-box d-flex align-items-center gap-3 p-3 rounded-2" style="background: var(--bg-light, #f8fafc);">
                             <i class="bi bi-telephone" style="color: #0652DD;"></i>
                             <div>
                                 <small style="color: var(--text-muted, #6b7280);">Telepon</small>
                                 <div class="fw-medium" style="color: var(--text-main, #1f2937);">{{ $rental->customer->phone ?? '-' }}</div>
                             </div>
                         </div>
-                        <div class="d-flex align-items-start gap-3 p-3 rounded-2" style="background: var(--bg-light, #f8fafc);">
+                        <div class="info-box d-flex align-items-start gap-3 p-3 rounded-2" style="background: var(--bg-light, #f8fafc);">
                             <i class="bi bi-geo-alt" style="color: #0652DD;"></i>
                             <div>
                                 <small style="color: var(--text-muted, #6b7280);">Alamat</small>
@@ -479,7 +598,7 @@
                 </div>
                 <div class="detail-card-body">
                     <div class="d-flex flex-column gap-3">
-                        <div class="d-flex align-items-center gap-3 p-3 rounded-2" style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border: 1px solid #93c5fd;">
+                        <div class="timeline-box-blue d-flex align-items-center gap-3 p-3 rounded-2" style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border: 1px solid #93c5fd;">
                             <div class="d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; border-radius: 50%; background: #0652DD; color: white;">
                                 <i class="bi bi-play-fill"></i>
                             </div>
@@ -488,7 +607,7 @@
                                 <div class="fw-bold" style="color: #1e3a8a;">{{ $rental->start_at ? \Carbon\Carbon::parse($rental->start_at)->format('d M Y, H:i') : '-' }}</div>
                             </div>
                         </div>
-                        <div class="d-flex align-items-center gap-3 p-3 rounded-2" style="background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); border: 1px solid #fca5a5;">
+                        <div class="timeline-box-red d-flex align-items-center gap-3 p-3 rounded-2" style="background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); border: 1px solid #fca5a5;">
                             <div class="d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; border-radius: 50%; background: #dc2626; color: white;">
                                 <i class="bi bi-alarm"></i>
                             </div>
@@ -498,7 +617,7 @@
                             </div>
                         </div>
                         @if($rental->returned_at)
-                        <div class="d-flex align-items-center gap-3 p-3 rounded-2" style="background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border: 1px solid #6ee7b7;">
+                        <div class="timeline-box-green d-flex align-items-center gap-3 p-3 rounded-2" style="background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border: 1px solid #6ee7b7;">
                             <div class="d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; border-radius: 50%; background: #059669; color: white;">
                                 <i class="bi bi-check-lg"></i>
                             </div>

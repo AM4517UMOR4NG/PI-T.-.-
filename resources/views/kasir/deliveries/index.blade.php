@@ -12,28 +12,41 @@
 
     <!-- Statistics Cards -->
     <div class="row mb-4">
-        <div class="col-md-3">
+        <div class="col-md-2">
             <div class="card border-0 shadow-sm bg-primary text-white">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="mb-1">Menunggu Diantar</h6>
+                            <h6 class="mb-1" style="font-size: 0.8rem;">Menunggu Diantar</h6>
                             <h2 class="mb-0">{{ $stats['pending_delivery'] }}</h2>
                         </div>
-                        <i class="bi bi-box-seam fs-1 opacity-50"></i>
+                        <i class="bi bi-truck fs-2 opacity-50"></i>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
+            <div class="card border-0 shadow-sm bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1" style="font-size: 0.8rem;">Ambil di Toko</h6>
+                            <h2 class="mb-0">{{ $stats['pending_pickup'] }}</h2>
+                        </div>
+                        <i class="bi bi-shop fs-2 opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
             <div class="card border-0 shadow-sm bg-warning text-dark">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="mb-1">Menunggu Konfirmasi</h6>
+                            <h6 class="mb-1" style="font-size: 0.8rem;">Konfirmasi User</h6>
                             <h2 class="mb-0">{{ $stats['awaiting_confirmation'] }}</h2>
                         </div>
-                        <i class="bi bi-hourglass-split fs-1 opacity-50"></i>
+                        <i class="bi bi-hourglass-split fs-2 opacity-50"></i>
                     </div>
                 </div>
             </div>
@@ -43,23 +56,23 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="mb-1">Diantar Hari Ini</h6>
+                            <h6 class="mb-1" style="font-size: 0.8rem;">Diantar Hari Ini</h6>
                             <h2 class="mb-0">{{ $stats['delivered_today'] }}</h2>
                         </div>
-                        <i class="bi bi-truck fs-1 opacity-50"></i>
+                        <i class="bi bi-box-seam fs-2 opacity-50"></i>
                     </div>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card border-0 shadow-sm bg-info text-white">
+            <div class="card border-0 shadow-sm bg-secondary text-white">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="mb-1">Dikonfirmasi User</h6>
+                            <h6 class="mb-1" style="font-size: 0.8rem;">Dikonfirmasi Hari Ini</h6>
                             <h2 class="mb-0">{{ $stats['confirmed_today'] }}</h2>
                         </div>
-                        <i class="bi bi-check-circle fs-1 opacity-50"></i>
+                        <i class="bi bi-check-circle fs-2 opacity-50"></i>
                     </div>
                 </div>
             </div>
@@ -83,8 +96,16 @@
     <!-- Tab Navigation -->
     <ul class="nav nav-tabs mb-4" id="deliveryTabs" role="tablist">
         <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="pending-tab" data-bs-toggle="tab" data-bs-target="#pending" type="button" role="tab">
-                <i class="bi bi-box-seam me-1"></i>Menunggu Diantar
+            <button class="nav-link active" id="pickup-tab" data-bs-toggle="tab" data-bs-target="#pickup" type="button" role="tab">
+                <i class="bi bi-shop me-1"></i>Ambil di Toko
+                @if($stats['pending_pickup'] > 0)
+                    <span class="badge bg-info">{{ $stats['pending_pickup'] }}</span>
+                @endif
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="pending-tab" data-bs-toggle="tab" data-bs-target="#pending" type="button" role="tab">
+                <i class="bi bi-truck me-1"></i>Siap Kirim
                 @if($stats['pending_delivery'] > 0)
                     <span class="badge bg-primary">{{ $stats['pending_delivery'] }}</span>
                 @endif
@@ -101,8 +122,127 @@
     </ul>
 
     <div class="tab-content" id="deliveryTabsContent">
+        <!-- Tab: Ambil di Toko (Pickup) -->
+        <div class="tab-pane fade show active" id="pickup" role="tabpanel">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0"><i class="bi bi-shop me-2"></i>Menunggu Pengambilan di Toko</h5>
+                    <small class="text-muted">Pelanggan yang memilih ambil barang sendiri di toko</small>
+                </div>
+                <div class="card-body p-0">
+                    @if($pendingPickups->isEmpty())
+                        <div class="text-center py-5">
+                            <i class="bi bi-inbox fs-1 text-muted"></i>
+                            <p class="text-muted mt-2">Tidak ada pelanggan yang menunggu pengambilan</p>
+                        </div>
+                    @else
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Kode</th>
+                                        <th>Pelanggan</th>
+                                        <th>Item</th>
+                                        <th>Total</th>
+                                        <th>Tgl Pesan</th>
+                                        <th class="text-center">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($pendingPickups as $rental)
+                                        <tr>
+                                            <td>
+                                                <span class="badge bg-info">{{ $rental->kode }}</span>
+                                            </td>
+                                            <td>
+                                                <strong>{{ $rental->customer->name ?? 'N/A' }}</strong>
+                                                <br>
+                                                <small class="text-muted">
+                                                    <i class="bi bi-telephone me-1"></i>{{ $rental->customer->phone ?? '-' }}
+                                                </small>
+                                            </td>
+                                            <td>
+                                                @foreach($rental->items as $item)
+                                                    <span class="badge bg-light text-dark me-1">
+                                                        {{ $item->rentable->nama ?? $item->rentable->judul ?? $item->rentable->name ?? 'Item' }}
+                                                        ({{ $item->quantity }}x)
+                                                    </span>
+                                                @endforeach
+                                            </td>
+                                            <td>
+                                                <strong>Rp {{ number_format($rental->total, 0, ',', '.') }}</strong>
+                                                <br>
+                                                <small class="text-success"><i class="bi bi-check-circle me-1"></i>Tanpa Ongkir</small>
+                                            </td>
+                                            <td>
+                                                {{ $rental->created_at->format('d M Y') }}
+                                                <br>
+                                                <small class="text-muted">{{ $rental->created_at->format('H:i') }}</small>
+                                            </td>
+                                            <td class="text-center">
+                                                <button type="button" class="btn btn-sm btn-success" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#confirmPickupModal{{ $rental->id }}">
+                                                    <i class="bi bi-check-circle me-1"></i>Konfirmasi Diambil
+                                                </button>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Modal Konfirmasi Pengambilan -->
+                                        <div class="modal fade" id="confirmPickupModal{{ $rental->id }}" tabindex="-1">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <form action="{{ route('kasir.deliveries.confirm-pickup', $rental) }}" method="POST">
+                                                        @csrf
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title">
+                                                                <i class="bi bi-shop me-2"></i>Konfirmasi Pengambilan Barang
+                                                            </h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <p>Konfirmasi bahwa barang untuk rental <strong>{{ $rental->kode }}</strong> sudah diambil oleh:</p>
+                                                            
+                                                            <div class="alert alert-info">
+                                                                <strong>{{ $rental->customer->name ?? 'N/A' }}</strong><br>
+                                                                <i class="bi bi-telephone me-1"></i>{{ $rental->customer->phone ?? '-' }}
+                                                            </div>
+
+                                                            <div class="alert alert-warning">
+                                                                <i class="bi bi-exclamation-triangle me-1"></i>
+                                                                <strong>Perhatian:</strong> Setelah dikonfirmasi, waktu sewa akan mulai terhitung.
+                                                            </div>
+
+                                                            <div class="mb-3">
+                                                                <label class="form-label">Catatan (Opsional)</label>
+                                                                <textarea name="pickup_notes" class="form-control" rows="2" 
+                                                                    placeholder="Contoh: Diambil oleh yang bersangkutan, dll."></textarea>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                                            <button type="submit" class="btn btn-success">
+                                                                <i class="bi bi-check-circle me-1"></i>Konfirmasi Barang Sudah Diambil
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="card-footer bg-white">
+                            {{ $pendingPickups->links() }}
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+
         <!-- Tab: Menunggu Diantar -->
-        <div class="tab-pane fade show active" id="pending" role="tabpanel">
+        <div class="tab-pane fade" id="pending" role="tabpanel">
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-white py-3">
                     <h5 class="mb-0"><i class="bi bi-box-seam me-2"></i>Rental Menunggu Pengantaran</h5>
@@ -151,9 +291,13 @@
                                             </td>
                                             <td>
                                                 <strong>Rp {{ number_format($rental->total, 0, ',', '.') }}</strong>
+                                                <br>
+                                                @if($rental->shipping_cost > 0)
+                                                    <small class="text-primary"><i class="bi bi-truck me-1"></i>Ongkir: Rp {{ number_format($rental->shipping_cost, 0, ',', '.') }}</small>
+                                                @endif
                                             </td>
                                             <td>
-                                                <small>{{ Str::limit($rental->customer->address ?? '-', 50) }}</small>
+                                                <small>{{ Str::limit($rental->delivery_address ?? $rental->customer->address ?? '-', 50) }}</small>
                                             </td>
                                             <td>
                                                 {{ $rental->created_at->format('d M Y') }}
@@ -164,7 +308,7 @@
                                                 <button type="button" class="btn btn-sm btn-success" 
                                                     data-bs-toggle="modal" 
                                                     data-bs-target="#confirmDeliveryModal{{ $rental->id }}">
-                                                    <i class="bi bi-truck me-1"></i>Konfirmasi Antar
+                                                    <i class="bi bi-truck me-1"></i>Kirim Barang
                                                 </button>
                                             </td>
                                         </tr>

@@ -132,8 +132,9 @@
                                 <label class="form-label fw-bold small text-uppercase d-block text-center text-muted">Email</label>
                                 <div class="d-flex align-items-center justify-content-center gap-2 form-control p-0 ps-3">
                                     <i class="bi bi-envelope text-muted"></i>
-                                    <input type="email" name="email" value="{{ old('email', $user->email) }}" required
-                                           class="form-control border-0 shadow-none bg-transparent text-main" placeholder="Alamat Email">
+                                    <input type="email" name="email" id="email" value="{{ old('email', $user->email) }}" required
+                                           class="form-control border-0 shadow-none bg-transparent text-main" placeholder="contoh@gmail.com"
+                                           pattern="[a-zA-Z0-9._%+-]+@gmail\.com$" title="Email harus menggunakan @gmail.com">
                                 </div>
                                 @error('email')
                                     <small class="text-danger mt-1 d-block text-center">{{ $message }}</small>
@@ -148,9 +149,10 @@
                                 <label class="form-label fw-bold small text-uppercase d-block text-center text-muted">Nomor Telepon <span class="text-danger">*</span></label>
                                 <div class="d-flex align-items-center justify-content-center gap-2 form-control p-0 ps-3">
                                     <i class="bi bi-telephone text-muted"></i>
-                                    <input type="text" name="phone" value="{{ old('phone', $user->phone) }}" required
+                                    <input type="text" name="phone" id="phone" value="{{ old('phone', $user->phone) }}" required
                                            class="form-control border-0 shadow-none bg-transparent text-main"
-                                           placeholder="Contoh: +6281234567890">
+                                           placeholder="Contoh: +6281234567890"
+                                           oninput="this.value = this.value.replace(/[^0-9+]/g, '')">
                                 </div>
                                 @error('phone')
                                     <small class="text-danger mt-1 d-block text-center">{{ $message }}</small>
@@ -244,6 +246,22 @@
 
     // Run when window is resized
     window.addEventListener('resize', adjustContainerWidth);
+
+    // Email validation for @gmail.com
+    const emailInput = document.getElementById('email');
+    const form = emailInput?.closest('form');
+    
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const email = emailInput.value.trim();
+            if (!email.endsWith('@gmail.com')) {
+                e.preventDefault();
+                alert('Email harus menggunakan @gmail.com');
+                emailInput.focus();
+                return false;
+            }
+        });
+    }
 
     // Run when sidebar is toggled
     if (typeof MutationObserver !== 'undefined') {

@@ -53,6 +53,130 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Typing effect code...
+            const headingText = "{{ __('dashboard.welcome_user', ['name' => Auth::user()->name]) }}";
+             // existing code...
+             // ...
+             // Auto-generated snippet shortened for brevity, I will include the full typing effect script preservation + new widgets
+             // Wait, I should not delete the script. I will just insert the widgets ABOVE the hero section.
+        });
+    </script>
+    
+    <!-- Dashboard Stats Widgets -->
+    <div class="row g-4 mb-5">
+        <!-- Active Rentals -->
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="card h-100 border-0 shadow-sm overflow-hidden card-hover-lift" style="border-radius: 16px;">
+                <div class="card-body position-relative p-4">
+                    <div class="position-absolute top-0 end-0 p-3 opacity-10">
+                        <i class="bi bi-controller display-4 text-primary"></i>
+                    </div>
+                    <div class="d-flex flex-column h-100">
+                        <div class="mb-3">
+                            <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-2">
+                                <i class="bi bi-joystick me-1"></i> Aktif
+                            </span>
+                        </div>
+                        <h2 class="display-5 fw-bold mb-1 text-dark">{{ $activeRentals }}</h2>
+                        <p class="text-muted mb-0 small text-uppercase fw-bold tracking-wider">Sedang Disewa</p>
+                        @if($activeRentals > 0)
+                            <div class="mt-3 pt-3 border-top border-light">
+                                <a href="{{ route('pelanggan.rentals.index') }}" class="text-decoration-none small fw-bold text-primary d-flex align-items-center">
+                                    Lihat Detail <i class="bi bi-arrow-right ms-2"></i>
+                                </a>
+                            </div>
+                        @else
+                            <div class="mt-3 pt-3 border-top border-light opacity-0">
+                                <span class="small">&nbsp;</span>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Payments -->
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="card h-100 border-0 shadow-sm overflow-hidden card-hover-lift" style="border-radius: 16px;">
+                <div class="card-body position-relative p-4">
+                    <div class="position-absolute top-0 end-0 p-3 opacity-10">
+                        <i class="bi bi-credit-card display-4 text-warning"></i>
+                    </div>
+                    <div class="d-flex flex-column h-100">
+                        <div class="mb-3">
+                            <span class="badge bg-warning-subtle text-warning-emphasis rounded-pill px-3 py-2">
+                                <i class="bi bi-hourglass-split me-1"></i> Pending
+                            </span>
+                        </div>
+                        <h2 class="display-5 fw-bold mb-1 text-dark">{{ $pendingPaymentsCount }}</h2>
+                        <p class="text-muted mb-0 small text-uppercase fw-bold tracking-wider">Menunggu Bayar</p>
+                        @if($pendingPaymentsCount > 0)
+                            <div class="mt-3 pt-3 border-top border-light">
+                                <a href="{{ route('pelanggan.rentals.index') }}" class="text-decoration-none small fw-bold text-warning d-flex align-items-center">
+                                    Bayar Sekarang <i class="bi bi-arrow-right ms-2"></i>
+                                </a>
+                            </div>
+                        @else
+                             <div class="mt-3 pt-3 border-top border-light opacity-0">
+                                <span class="small">&nbsp;</span>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Transactions -->
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="card h-100 border-0 shadow-sm overflow-hidden card-hover-lift" style="border-radius: 16px;">
+                <div class="card-body position-relative p-4">
+                    <div class="position-absolute top-0 end-0 p-3 opacity-10">
+                        <i class="bi bi-clock-history display-4 text-success"></i>
+                    </div>
+                    <div class="d-flex flex-column h-100">
+                        <div class="mb-3">
+                            <span class="badge bg-success-subtle text-success rounded-pill px-3 py-2">
+                                <i class="bi bi-check-circle me-1"></i> Total
+                            </span>
+                        </div>
+                        <h2 class="display-5 fw-bold mb-1 text-dark">{{ $totalTransactions }}</h2>
+                        <p class="text-muted mb-0 small text-uppercase fw-bold tracking-wider">Riwayat Sewa</p>
+                        <div class="mt-3 pt-3 border-top border-light">
+                             <a href="{{ route('pelanggan.rentals.index') }}" class="text-decoration-none small fw-bold text-success d-flex align-items-center">
+                                Lihat Riwayat <i class="bi bi-arrow-right ms-2"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Spent -->
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="card h-100 border-0 shadow-sm overflow-hidden card-hover-lift" style="border-radius: 16px;">
+                <div class="card-body position-relative p-4">
+                    <div class="position-absolute top-0 end-0 p-3 opacity-10">
+                        <i class="bi bi-wallet2 display-4 text-info"></i>
+                    </div>
+                    <div class="d-flex flex-column h-100">
+                        <div class="mb-3">
+                            <span class="badge bg-info-subtle text-info-emphasis rounded-pill px-3 py-2">
+                                <i class="bi bi-graph-up me-1"></i> Pengeluaran
+                            </span>
+                        </div>
+                        <h4 class="fw-bold mb-1 text-dark text-truncate" title="Rp {{ number_format($totalSpent, 0, ',', '.') }}">Rp {{ number_format($totalSpent, 0, ',', '.') }}</h4>
+                        <p class="text-muted mb-0 small text-uppercase fw-bold tracking-wider">Total Belanja</p>
+                        <div class="mt-3 pt-3 border-top border-light opacity-0">
+                            <span class="small">&nbsp;</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
             const headingText = "{{ __('dashboard.welcome_user', ['name' => Auth::user()->name]) }}";
             
             // Array of sentences to rotate

@@ -71,6 +71,13 @@ Route::get('/media/{path}', function (string $path) {
     return Storage::disk('public')->response($path);
 })->where('path', '.*')->name('media');
 
+// Leaderboard Feature (User Friendly)
+Route::middleware(['auth'])->get('/leaderboard', [DashboardController::class, 'leaderboard'])->name('leaderboard.index');
+Route::middleware(['auth', 'can:access-pelanggan'])->get('/my-card', [DashboardController::class, 'myCard'])->name('gamer.card');
+Route::middleware(['auth', 'can:access-pelanggan'])->get('/gacha', [\App\Http\Controllers\GachaController::class, 'index'])->name('gacha.index');
+Route::middleware(['auth', 'can:access-pelanggan'])->post('/gacha/spin', [\App\Http\Controllers\GachaController::class, 'spin'])->name('gacha.spin');
+Route::middleware(['auth', 'can:access-pelanggan'])->get('/neural-link', [\App\Http\Controllers\NeuralController::class, 'index'])->name('neural.index');
+
 Route::get('/register', [RegisterController::class, 'show'])->name('register.show');
 Route::post('/register', [RegisterController::class, 'register'])->name('register.post');
 
@@ -112,6 +119,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('admin/pelanggan', PelangganController::class)->parameters([
         'pelanggan' => 'pelanggan'
     ])->names('admin.pelanggan');
+    Route::post('admin/pelanggan/{pelanggan}/block', [PelangganController::class, 'toggleBlock'])->name('admin.pelanggan.block');
 
     // Admin - UnitPS
     Route::resource('admin/unitps', UnitPSController::class)->parameters([
@@ -244,6 +252,7 @@ Route::middleware(['web', 'auth', 'can:access-kasir'])->prefix('kasir')->name('k
     Route::get('deliveries', [\App\Http\Controllers\Kasir\DeliveryController::class, 'index'])->name('deliveries.index');
     Route::get('deliveries/{rental}', [\App\Http\Controllers\Kasir\DeliveryController::class, 'show'])->name('deliveries.show');
     Route::post('deliveries/{rental}/confirm', [\App\Http\Controllers\Kasir\DeliveryController::class, 'confirmDelivery'])->name('deliveries.confirm');
+    Route::post('deliveries/{rental}/confirm-pickup', [\App\Http\Controllers\Kasir\DeliveryController::class, 'confirmPickup'])->name('deliveries.confirm-pickup');
     Route::post('deliveries/{rental}/cancel', [\App\Http\Controllers\Kasir\DeliveryController::class, 'cancelDelivery'])->name('deliveries.cancel');
 
     // Legacy routes

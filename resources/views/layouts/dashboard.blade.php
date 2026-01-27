@@ -2145,6 +2145,14 @@
                     <li><a class="dropdown-item" href="{{ route('lang.switch', 'en') }}" style="color: var(--text-main);">🇬🇧 English</a></li>
                 </ul>
             </div>
+            
+            <!-- Quick Dashboard Link -->
+            <a href="{{ route('dashboard.pelanggan') }}" class="btn btn-link text-decoration-none position-relative" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{{ __('dashboard.home') }}">
+                <i class="bi bi-grid-fill fs-5" style="color: var(--text-main);"></i>
+                <span class="position-absolute top-0 start-100 translate-middle p-1 bg-primary border border-light rounded-circle" style="width: 8px; height: 8px; margin-top: 10px; margin-left: -8px;">
+                    <span class="visually-hidden">New alerts</span>
+                </span>
+            </a>
             @endif
 
             <!-- Dark Mode Toggle -->

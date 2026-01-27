@@ -571,13 +571,9 @@
                             $modelClass = null;
 
                             // Determine model class and image field
-                            if(isset($directItem) && $directItem) {
-                                $itemType = $item['type'] ?? null;
-                                $itemId = $item['item_id'] ?? $item['id'] ?? null;
-                            } else {
-                                $itemType = $item->type ?? null;
-                                $itemId = $item->item_id ?? null;
-                            }
+                            // Determine model class and image field
+                            $itemType = $item->type ?? null;
+                            $itemId = $item->item_id ?? $item->id ?? null;
 
                             switch($itemType) {
                                 case 'unitps':
@@ -599,17 +595,11 @@
                             }
 
                             // Get item details
-                            if(isset($directItem) && $directItem) {
-                                $itemName = $item['name'] ?? 'Unknown';
-                                $itemPrice = $item['price'] ?? 0;
-                                $itemPriceType = $item['price_type'] ?? 'per_hari';
-                                $itemQuantity = $item['quantity'] ?? 1;
-                            } else {
-                                $itemName = $item->name ?? 'Unknown';
-                                $itemPrice = $item->price ?? 0;
-                                $itemPriceType = $item->price_type ?? 'per_hari';
-                                $itemQuantity = $item->quantity ?? 1;
-                            }
+                            // Get item details
+                            $itemName = $item->name ?? 'Unknown';
+                            $itemPrice = $item->price ?? 0;
+                            $itemPriceType = $item->price_type ?? 'per_hari';
+                            $itemQuantity = $item->quantity ?? 1;
                         @endphp
 
                         <div class="d-flex align-items-start mb-3 pb-3" style="border-bottom: 1px solid #E5E7EB;">
@@ -666,11 +656,13 @@
                                                 <i class="bi bi-dash"></i>
                                             </button>
                                             <input type="number" 
-                                                   class="qty-input text-center" 
-                                                   name="quantities[{{ $itemType }}_{{ $itemId }}]" 
-                                                   value="{{ $itemQuantity }}" 
-                                                   min="1" 
-                                                   max="{{ $maxStock }}"
+                                                class="form-control quantity-input text-center p-1" 
+                                                name="quantity" 
+                                                value="1" 
+                                                min="1" 
+                                                max="{{ $itemType === 'unitps' ? $item->stock : $item->stok }}"
+                                                oninput="if(this.value < 1) this.value = 1;" 
+                                                onkeydown="return event.keyCode !== 69 && event.keyCode !== 189"
                                                    data-item-type="{{ $itemType }}" 
                                                    data-item-id="{{ $itemId }}" 
                                                    data-price="{{ $itemPrice }}"
@@ -702,8 +694,17 @@
                     @endforelse
 
                     <!-- Action Buttons -->
-                    <!-- Total Price Summary -->
+                    <!-- Total Price Summary (Langkah 11-12 UC006: Hitung total + ongkir) -->
                     <div class="mt-4 p-3 rounded total-summary-box">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="small total-label">Subtotal:</span>
+                            <span id="subtotal-price" class="fw-bold" style="color: #6B7280;">Rp 0</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-2" id="shipping-row" style="display: none !important;">
+                            <span class="small total-label">Ongkos Kirim:</span>
+                            <span id="shipping-cost" class="fw-bold" style="color: #6B7280;">Rp 0</span>
+                        </div>
+                        <hr class="my-2" style="border-color: #10b981;">
                         <div class="d-flex justify-content-between align-items-center">
                             <span class="fw-bold total-label"><i class="bi bi-calculator me-2"></i>Total Harga:</span>
                             <span id="total-price" class="fs-5 fw-bold" style="color: #10b981;">Rp 0</span>
@@ -722,17 +723,10 @@
                                 @php $firstItem = $cartItems->first(); @endphp
                                 <form id="add-to-cart-form" method="POST" action="{{ route('pelanggan.cart.add') }}" class="flex-fill">
                                     @csrf
-                                    @if(is_array($firstItem))
-                                        <input type="hidden" name="type" value="{{ $firstItem['type'] }}">
-                                        <input type="hidden" name="id" value="{{ $firstItem['item_id'] ?? $firstItem['id'] ?? null }}">
-                                        <input type="hidden" name="price_type" value="{{ $firstItem['price_type'] }}">
-                                        <input type="hidden" name="quantity" id="cart-quantity" value="{{ $firstItem['quantity'] ?? 1 }}">
-                                    @else
-                                        <input type="hidden" name="type" value="{{ $firstItem->type }}">
-                                        <input type="hidden" name="id" value="{{ $firstItem->item_id }}">
-                                        <input type="hidden" name="price_type" value="{{ $firstItem->price_type }}">
-                                        <input type="hidden" name="quantity" id="cart-quantity" value="{{ $firstItem->quantity }}">
-                                    @endif
+                                    <input type="hidden" name="type" value="{{ $firstItem->type }}">
+                                    <input type="hidden" name="id" value="{{ $firstItem->item_id ?? $firstItem->id ?? null }}">
+                                    <input type="hidden" name="price_type" value="{{ $firstItem->price_type }}">
+                                    <input type="hidden" name="quantity" id="cart-quantity" value="{{ $firstItem->quantity }}">
                                     <button type="button" class="btn btn-primary w-100" onclick="addToCart()">
                                         <span id="cart-button-text"><i class="bi bi-cart-plus me-1"></i> Tambah ke Keranjang</span>
                                         <span id="cart-button-spinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
@@ -783,23 +777,68 @@
                             @enderror
                         </div>
 
-                        <!-- Return Date -->
+                        <!-- Duration (1-7 Days) -->
                         <div class="mb-4">
-                            <label for="return_date" class="form-label fw-bold" style="color: #222222;">
-                                <i class="bi bi-calendar-x me-1" style="color: #f59e0b;"></i> Tanggal Kembali
+                            <label for="duration" class="form-label fw-bold" style="color: #222222;">
+                                <i class="bi bi-clock-history me-1" style="color: #f59e0b;"></i> Durasi Sewa
                             </label>
-                            <input type="date"
-                                   id="return_date"
-                                   name="return_date"
-                                   value="{{ old('return_date') }}"
-                                   min="{{ date('Y-m-d', strtotime('+1 day')) }}"
-                                   required
-                                   class="form-control" style="background-color: #FFFFFF; border-color: #A3A3A3; color: #222222;" @error('return_date') style="border-color: #ef4444;" @enderror>
-                            @error('return_date')
-                                <div class="invalid-feedback" style="color: #ef4444;">{{ $message }}</div>
-                            @enderror
+                            <select class="form-select" id="duration" name="duration" required style="background-color: #FFFFFF; border-color: #A3A3A3; color: #222222;">
+                                @for($i = 1; $i <= 30; $i++)
+                                    <option value="{{ $i }}" {{ old('duration') == $i ? 'selected' : '' }}>{{ $i }} Hari</option>
+                                @endfor
+                            </select>
                             <div class="form-text small" style="color: #6B7280;">
-                                <i class="bi bi-info-circle me-1"></i> Maksimal durasi sewa: 30 hari
+                                <i class="bi bi-info-circle me-1"></i> Pilih durasi sewa antara 1 sampai 30 hari.
+                            </div>
+                        </div>
+
+                        <!-- Hidden Return Date (Calculated via JS) -->
+                        <input type="hidden" id="return_date" name="return_date" value="{{ old('return_date') }}">
+                        
+                        <!-- Display Calculated Return Date -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold" style="color: #222222;">
+                                <i class="bi bi-calendar-check me-1" style="color: #10b981;"></i> Tanggal Pengembalian
+                            </label>
+                            <input type="text" id="return_date_display" class="form-control" readonly style="background-color: #F3F4F6; border-color: #E5E7EB; color: #4B5563;">
+                        </div>
+
+                        <!-- Delivery Method (Langkah 10 UC006) -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold" style="color: #222222;">
+                                <i class="bi bi-truck me-1" style="color: #8b5cf6;"></i> Metode Pengiriman
+                            </label>
+                            <div class="row g-3">
+                                <div class="col-6">
+                                    <input type="radio" class="btn-check" name="delivery_method" id="pickup" value="pickup" {{ old('delivery_method', 'pickup') == 'pickup' ? 'checked' : '' }} required>
+                                    <label class="btn btn-outline-primary w-100 py-3 delivery-option" for="pickup">
+                                        <i class="bi bi-shop fs-4 d-block mb-2"></i>
+                                        <span class="fw-bold">Ambil di Toko</span>
+                                        <small class="d-block text-muted mt-1">Gratis</small>
+                                    </label>
+                                </div>
+                                <div class="col-6">
+                                    <input type="radio" class="btn-check" name="delivery_method" id="delivery" value="delivery" {{ old('delivery_method') == 'delivery' ? 'checked' : '' }}>
+                                    <label class="btn btn-outline-primary w-100 py-3 delivery-option" for="delivery">
+                                        <i class="bi bi-truck fs-4 d-block mb-2"></i>
+                                        <span class="fw-bold">Diantar</span>
+                                        <small class="d-block text-muted mt-1">+ Rp 15.000</small>
+                                    </label>
+                                </div>
+                            </div>
+                            @error('delivery_method')
+                                <div class="text-danger small mt-2">{{ $message }}</div>
+                            @enderror
+                            
+                            <!-- Delivery Address Preview (shown when delivery selected) -->
+                            <div id="delivery-address-preview" class="mt-3 p-3 rounded" style="background-color: #f0f9ff; border: 1px solid #0ea5e9; display: none;">
+                                <div class="d-flex align-items-start">
+                                    <i class="bi bi-geo-alt-fill me-2" style="color: #0ea5e9;"></i>
+                                    <div>
+                                        <small class="fw-bold" style="color: #0369a1;">Alamat Pengiriman:</small>
+                                        <p class="mb-0 small" style="color: #0c4a6e;">{{ auth()->user()->address ?? 'Alamat belum diisi' }}</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -833,8 +872,50 @@
 // Date validation and Quantity Control
 document.addEventListener('DOMContentLoaded', function() {
     const rentalDateInput = document.getElementById('rental_date');
+    const durationInput = document.getElementById('duration');
     const returnDateInput = document.getElementById('return_date');
+    const returnDateDisplay = document.getElementById('return_date_display');
+    const pickupRadio = document.getElementById('pickup');
+    const deliveryRadio = document.getElementById('delivery');
+    const deliveryAddressPreview = document.getElementById('delivery-address-preview');
+    const shippingRow = document.getElementById('shipping-row');
     
+    // Shipping cost constant
+    const SHIPPING_COST = 15000;
+    
+    // Calculate Return Date based on Duration
+    function updateReturnDate() {
+        const rentalDate = rentalDateInput.value ? new Date(rentalDateInput.value) : new Date();
+        const duration = parseInt(durationInput.value) || 1;
+        
+        // Calculate return date (rental date + duration)
+        const returnDate = new Date(rentalDate);
+        returnDate.setDate(rentalDate.getDate() + duration);
+        
+        // Format for input value (YYYY-MM-DD)
+        const year = returnDate.getFullYear();
+        const month = String(returnDate.getMonth() + 1).padStart(2, '0');
+        const day = String(returnDate.getDate()).padStart(2, '0');
+        const formattedDate = `${year}-${month}-${day}`;
+        
+        // Update hidden input
+        returnDateInput.value = formattedDate;
+        
+        // Update display input (dd/mm/yyyy for better readability)
+        const displayDay = String(returnDate.getDate()).padStart(2, '0');
+        const displayMonth = String(returnDate.getMonth() + 1).padStart(2, '0');
+        returnDateDisplay.value = `${displayDay}/${displayMonth}/${year}`;
+        
+        calculateTotal();
+    }
+    
+    // Listen for changes
+    if(rentalDateInput) rentalDateInput.addEventListener('change', updateReturnDate);
+    if(durationInput) durationInput.addEventListener('change', updateReturnDate);
+    
+    // Initialize initial date
+    updateReturnDate();
+
     // Item prices data
     const itemPrices = {};
     document.querySelectorAll('.qty-input').forEach(input => {
@@ -851,44 +932,72 @@ document.addEventListener('DOMContentLoaded', function() {
         return 'Rp ' + number.toLocaleString('id-ID');
     }
     
-    // Calculate and update total price
-    function calculateTotal() {
-        const rentalDate = rentalDateInput.value ? new Date(rentalDateInput.value) : null;
-        const returnDate = returnDateInput.value ? new Date(returnDateInput.value) : null;
+    // Get current shipping cost based on delivery method
+    function getShippingCost() {
+        return deliveryRadio && deliveryRadio.checked ? SHIPPING_COST : 0;
+    }
+    
+    // Update shipping display
+    function updateShippingDisplay() {
+        const isDelivery = deliveryRadio && deliveryRadio.checked;
         
-        let totalDays = 0;
-        let totalPrice = 0;
-        
-        if (rentalDate && returnDate && returnDate > rentalDate) {
-            // Calculate days difference
-            const timeDiff = returnDate.getTime() - rentalDate.getTime();
-            totalDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
-            
-            // Calculate total price for all items
-            Object.keys(itemPrices).forEach(key => {
-                const item = itemPrices[key];
-                totalPrice += item.price * item.quantity * totalDays;
-            });
-            
-            // If no items with quantity control, use base price
-            if (Object.keys(itemPrices).length === 0) {
-                // Get price from badge
-                const priceText = document.querySelector('.badge[style*="background-color: #e0e7ff"]');
-                if (priceText) {
-                    const priceMatch = priceText.textContent.match(/Rp\s*([\d.]+)/);
-                    if (priceMatch) {
-                        const basePrice = parseFloat(priceMatch[1].replace(/\./g, ''));
-                        totalPrice = basePrice * totalDays;
-                    }
-                }
-            }
-            
-            document.getElementById('total-days').textContent = `Durasi: ${totalDays} hari`;
-        } else {
-            document.getElementById('total-days').textContent = 'Pilih tanggal untuk melihat total';
+        if (deliveryAddressPreview) {
+            deliveryAddressPreview.style.display = isDelivery ? 'block' : 'none';
         }
         
+        if (shippingRow) {
+            shippingRow.style.display = isDelivery ? 'flex' : 'none';
+            shippingRow.style.setProperty('display', isDelivery ? 'flex' : 'none', 'important');
+        }
+        
+        const shippingCostEl = document.getElementById('shipping-cost');
+        if (shippingCostEl) {
+            shippingCostEl.textContent = isDelivery ? formatRupiah(SHIPPING_COST) : 'Rp 0';
+        }
+        
+        calculateTotal();
+    }
+    
+    // Calculate and update total price
+    function calculateTotal() {
+        const duration = parseInt(durationInput.value) || 0;
+        let subtotalPrice = 0;
+        
+        // Calculate subtotal
+        Object.keys(itemPrices).forEach(key => {
+            const item = itemPrices[key];
+            subtotalPrice += item.price * item.quantity * duration;
+        });
+        
+        // If no items with quantity control, use base price
+        if (Object.keys(itemPrices).length === 0) {
+            const priceText = document.querySelector('.badge[style*="background-color: #e0e7ff"]');
+            if (priceText) {
+                const priceMatch = priceText.textContent.match(/Rp\s*([\d.]+)/);
+                if (priceMatch) {
+                    const basePrice = parseFloat(priceMatch[1].replace(/\./g, ''));
+                    subtotalPrice = basePrice * duration;
+                }
+            }
+        }
+        
+        document.getElementById('total-days').textContent = `Durasi: ${duration} hari`;
+        
+        // Calculate total with shipping
+        const shippingCost = getShippingCost();
+        const totalPrice = subtotalPrice + shippingCost;
+        
+        // Update display
+        document.getElementById('subtotal-price').textContent = formatRupiah(subtotalPrice);
         document.getElementById('total-price').textContent = formatRupiah(totalPrice);
+    }
+    
+    // Delivery method change handlers
+    if (pickupRadio) {
+        pickupRadio.addEventListener('change', updateShippingDisplay);
+    }
+    if (deliveryRadio) {
+        deliveryRadio.addEventListener('change', updateShippingDisplay);
     }
     
     // Update subtotal for individual item
@@ -1038,7 +1147,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Initial calculation
+    // Initial calculation and shipping display
+    updateShippingDisplay();
     calculateTotal();
 });
 </script>

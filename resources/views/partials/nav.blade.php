@@ -18,6 +18,7 @@
                 ['label' => 'Unit PS', 'route' => route('pelanggan.unitps.index')],
                 ['label' => 'Games', 'route' => route('pelanggan.games.index')],
                 ['label' => 'Aksesoris', 'route' => route('pelanggan.accessories.index')],
+                ['label' => 'Leaderboard', 'route' => route('leaderboard.index')],
                 ['label' => 'Riwayat Sewa', 'route' => route('pelanggan.rentals.index')],
                 ['label' => 'Keranjang', 'route' => route('pelanggan.cart.index')],
             ];

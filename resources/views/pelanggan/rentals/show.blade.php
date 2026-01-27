@@ -334,7 +334,13 @@
                         <div class="row align-items-center">
                             <div class="col-5 info-label"><i class="bi bi-hourglass me-1"></i> Durasi</div>
                             <div class="col-7 info-value">
-                                {{ \Carbon\Carbon::parse($rental->start_at)->diffInDays(\Carbon\Carbon::parse($rental->due_at)) }} hari
+                                @php
+                                    $startDate = \Carbon\Carbon::parse($rental->start_at)->startOfDay();
+                                    $dueDate = \Carbon\Carbon::parse($rental->due_at)->startOfDay();
+                                    $durasi = $startDate->diffInDays($dueDate);
+                                    if ($durasi < 1) $durasi = 1;
+                                @endphp
+                                {{ $durasi }} hari
                             </div>
                         </div>
                     </div>
@@ -414,55 +420,87 @@
                     <!-- Actions -->
                     @if($rental->status === 'menunggu_pengantaran')
                         <div class="mt-4">
-                            <div class="rental-card p-4 delivery-card">
-                                <h6 class="fw-bold mb-3 delivery-card-title">
-                                    <i class="bi bi-truck me-2"></i>Status Pengantaran
-                                </h6>
-                                
-                                @if($rental->delivered_at)
-                                    <!-- Barang sudah diantar, user bisa konfirmasi -->
-                                    <div class="alert alert-success mb-3">
-                                        <i class="bi bi-check-circle me-2"></i>
-                                        <strong>Barang sudah diantarkan!</strong>
-                                        <br>
-                                        <small>Diantar pada: {{ $rental->delivered_at->format('d M Y, H:i') }}</small>
-                                        @if($rental->delivery_notes)
-                                            <br><small>Catatan: {{ $rental->delivery_notes }}</small>
-                                        @endif
-                                    </div>
+                            @if($rental->delivery_method == 'pickup')
+                                <!-- Metode: Ambil di Toko (pickup) -->
+                                <div class="rental-card p-4 delivery-card">
+                                    <h6 class="fw-bold mb-3 delivery-card-title">
+                                        <i class="bi bi-shop me-2"></i>Pengambilan di Toko
+                                    </h6>
                                     
-                                    <p class="mb-3 delivery-card-text">
-                                        <i class="bi bi-info-circle me-1"></i>
-                                        Silakan konfirmasi jika Anda sudah menerima barang. 
-                                        <strong>Waktu sewa akan mulai terhitung setelah Anda mengkonfirmasi penerimaan.</strong>
-                                    </p>
-                                    
-                                    <form action="{{ route('pelanggan.rentals.confirm-delivery', $rental) }}" method="POST" 
-                                        onsubmit="return confirm('Apakah Anda sudah menerima barang dengan baik? Waktu sewa akan mulai terhitung setelah konfirmasi ini.')">
-                                        @csrf
-                                        <button type="submit" class="btn btn-success w-100 fw-bold py-2">
-                                            <i class="bi bi-check-circle me-2"></i>Konfirmasi Sudah Menerima Barang
-                                        </button>
-                                    </form>
-                                @else
-                                    <!-- Barang belum diantar -->
                                     <div class="d-flex align-items-center mb-3">
-                                        <div class="spinner-border spinner-border-sm delivery-card-spinner me-3" role="status">
-                                            <span class="visually-hidden">Loading...</span>
+                                        <div class="me-3" style="color: #f59e0b;">
+                                            <i class="bi bi-hourglass-split fs-3"></i>
                                         </div>
                                         <div>
-                                            <strong class="delivery-card-text">Pesanan sedang diproses</strong>
+                                            <strong class="delivery-card-text">Menunggu Pengambilan</strong>
                                             <br>
-                                            <small class="text-muted">Barang akan segera diantarkan ke alamat Anda</small>
+                                            <small class="text-muted">Silakan datang ke toko untuk mengambil barang Anda</small>
                                         </div>
                                     </div>
                                     
                                     <div class="p-3 rounded delivery-address-box">
-                                        <small class="delivery-address-label"><i class="bi bi-geo-alt me-1"></i>Alamat pengiriman:</small>
-                                        <p class="mb-0 fw-bold delivery-address-text">{{ auth()->user()->address ?? 'Alamat belum diisi' }}</p>
+                                        <small class="delivery-address-label"><i class="bi bi-geo-alt me-1"></i>Alamat toko:</small>
+                                        <p class="mb-0 fw-bold delivery-address-text">PlayStation Rental Store</p>
+                                        <small class="text-muted">Jam operasional: 09:00 - 21:00 WIB</small>
                                     </div>
-                                @endif
-                            </div>
+                                    
+                                    <div class="alert alert-warning mt-3 mb-0">
+                                        <i class="bi bi-info-circle me-1"></i>
+                                        <small>Tunjukkan kode pesanan <strong>{{ $rental->kode }}</strong> kepada kasir saat mengambil barang. Kasir akan mengkonfirmasi pengambilan dan waktu sewa akan mulai terhitung.</small>
+                                    </div>
+                                </div>
+                            @else
+                                <!-- Metode: Diantar ke alamat (delivery) atau rental lama (null) -->
+                                <div class="rental-card p-4 delivery-card">
+                                    <h6 class="fw-bold mb-3 delivery-card-title">
+                                        <i class="bi bi-truck me-2"></i>Status Pengantaran
+                                    </h6>
+                                    
+                                    @if($rental->delivered_at)
+                                        <!-- Barang sudah diantar, user bisa konfirmasi -->
+                                        <div class="alert alert-success mb-3">
+                                            <i class="bi bi-check-circle me-2"></i>
+                                            <strong>Barang sudah diantarkan!</strong>
+                                            <br>
+                                            <small>Diantar pada: {{ $rental->delivered_at->format('d M Y, H:i') }}</small>
+                                            @if($rental->delivery_notes)
+                                                <br><small>Catatan: {{ $rental->delivery_notes }}</small>
+                                            @endif
+                                        </div>
+                                        
+                                        <p class="mb-3 delivery-card-text">
+                                            <i class="bi bi-info-circle me-1"></i>
+                                            Silakan konfirmasi jika Anda sudah menerima barang. 
+                                            <strong>Waktu sewa akan mulai terhitung setelah Anda mengkonfirmasi penerimaan.</strong>
+                                        </p>
+                                        
+                                        <form action="{{ route('pelanggan.rentals.confirm-delivery', $rental) }}" method="POST" 
+                                            onsubmit="return confirm('Apakah Anda sudah menerima barang dengan baik? Waktu sewa akan mulai terhitung setelah konfirmasi ini.')">
+                                            @csrf
+                                            <button type="submit" class="btn btn-success w-100 fw-bold py-2">
+                                                <i class="bi bi-check-circle me-2"></i>Konfirmasi Sudah Menerima Barang
+                                            </button>
+                                        </form>
+                                    @else
+                                        <!-- Barang belum diantar -->
+                                        <div class="d-flex align-items-center mb-3">
+                                            <div class="spinner-border spinner-border-sm delivery-card-spinner me-3" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                            <div>
+                                                <strong class="delivery-card-text">Pesanan sedang diproses</strong>
+                                                <br>
+                                                <small class="text-muted">Barang akan segera diantarkan ke alamat Anda</small>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="p-3 rounded delivery-address-box">
+                                            <small class="delivery-address-label"><i class="bi bi-geo-alt me-1"></i>Alamat pengiriman:</small>
+                                            <p class="mb-0 fw-bold delivery-address-text">{{ $rental->delivery_address ?? auth()->user()->address ?? 'Alamat belum diisi' }}</p>
+                                        </div>
+                                    @endif
+                                </div>
+                            @endif
                         </div>
                     @endif
 

@@ -127,7 +127,9 @@
                                             <div class="row g-2">
                                                 <div class="col-md-5">
                                                     <label class="form-label small fw-bold text-danger">Denda (Rp) *</label>
-                                                    <input type="number" name="items[{{ $item->id }}][fine]" class="form-control border-danger" min="0" value="{{ $item->fine ?? 0 }}" placeholder="Masukkan nominal denda">
+                                                    <input type="number" name="items[{{ $item->id }}][fine]" class="form-control border-danger" min="0" value="{{ $item->fine ?? 0 }}" placeholder="Masukkan nominal denda"
+                                                        oninput="if(this.value < 0) this.value = 0;" 
+                                                        onkeydown="return event.keyCode !== 69 && event.keyCode !== 189">
                                                     <small class="text-muted">Denda berdasarkan kerusakan yang dibuat</small>
                                                 </div>
                                                 <div class="col-md-7">

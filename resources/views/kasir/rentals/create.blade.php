@@ -15,15 +15,15 @@
         <div class="row">
             <!-- Left Column: Customer & Dates -->
             <div class="col-lg-4 mb-4">
-                <div class="card border-0 shadow-sm h-100 bg-white text-dark">
-                    <div class="card-header bg-white text-dark py-3">
+                <div class="card border-0 shadow-sm h-100" style="background: var(--card-bg, #ffffff); color: var(--text-main, #1f2937);">
+                    <div class="card-header py-3" style="background: var(--card-bg, #ffffff); color: var(--text-main, #1f2937); border-bottom: 1px solid var(--card-border, #e5e7eb);">
                         <h6 class="mb-0"><i class="bi bi-person-lines-fill me-2"></i>Data Pelanggan & Waktu</h6>
                     </div>
                     <div class="card-body">
                         <!-- Customer Selection -->
                         <div class="mb-3">
                             <label class="form-label fw-bold">Pelanggan</label>
-                            <select class="form-select bg-light text-dark border-secondary @error('user_id') is-invalid @enderror" name="user_id" required>
+                            <select class="form-select @error('user_id') is-invalid @enderror" name="user_id" required style="background: var(--input-bg, #f8fafc); color: var(--text-main, #1f2937); border-color: var(--card-border, #d1d5db);">
                                 <option value="">-- Pilih Pelanggan --</option>
                                 @foreach($customers as $customer)
                                     <option value="{{ $customer->id }}" {{ old('user_id') == $customer->id ? 'selected' : '' }}>
@@ -32,13 +32,13 @@
                                 @endforeach
                             </select>
                             @error('user_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                            <div class="form-text text-muted">Pilih pelanggan yang sudah terdaftar.</div>
+                            <div class="form-text" style="color: var(--text-muted, #6b7280);">Pilih pelanggan yang sudah terdaftar.</div>
                         </div>
 
                         <!-- Start Date -->
                         <div class="mb-3">
                             <label class="form-label fw-bold">Mulai Sewa</label>
-                            <input type="datetime-local" class="form-control bg-light text-dark border-secondary @error('start_at') is-invalid @enderror"
+                            <input type="datetime-local" class="form-control @error('start_at') is-invalid @enderror" style="background: var(--input-bg, #f8fafc); color: var(--text-main, #1f2937); border-color: var(--card-border, #d1d5db);"
                                    name="start_at" value="{{ old('start_at', now()->format('Y-m-d\TH:i')) }}" required>
                             @error('start_at')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
@@ -46,10 +46,10 @@
                         <!-- Due Date -->
                         <div class="mb-3">
                             <label class="form-label fw-bold">Jatuh Tempo (Estimasi)</label>
-                            <input type="datetime-local" class="form-control bg-light text-dark border-secondary @error('due_at') is-invalid @enderror"
+                            <input type="datetime-local" class="form-control @error('due_at') is-invalid @enderror" style="background: var(--input-bg, #f8fafc); color: var(--text-main, #1f2937); border-color: var(--card-border, #d1d5db);"
                                    name="due_at" value="{{ old('due_at') }}">
                             @error('due_at')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                            <div class="form-text text-muted">Opsional. Kosongkan jika open rental.</div>
+                            <div class="form-text" style="color: var(--text-muted, #6b7280);">Opsional. Kosongkan jika open rental.</div>
                         </div>
                     </div>
                 </div>
@@ -57,8 +57,8 @@
 
             <!-- Right Column: Items & Payment -->
             <div class="col-lg-8 mb-4">
-                <div class="card border-0 shadow-sm mb-4 bg-white text-dark">
-                    <div class="card-header bg-white text-dark py-3 d-flex justify-content-between align-items-center border-bottom border-secondary">
+                <div class="card border-0 shadow-sm mb-4" style="background: var(--card-bg, #ffffff); color: var(--text-main, #1f2937);">
+                    <div class="card-header py-3 d-flex justify-content-between align-items-center" style="background: var(--card-bg, #ffffff); color: var(--text-main, #1f2937); border-bottom: 1px solid var(--card-border, #e5e7eb);">
                         <h6 class="mb-0"><i class="bi bi-cart-check me-2"></i>Item Sewa</h6>
                         <button type="button" class="btn btn-sm btn-primary" id="addItemBtn">
                             <i class="bi bi-plus-lg me-1"></i>Tambah Item
@@ -66,8 +66,8 @@
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
-                            <table class="table table-light table-hover align-middle mb-0" id="itemsTable">
-                                <thead class="table-light border-bottom border-secondary">
+                            <table class="table table-hover align-middle mb-0" id="itemsTable" style="--bs-table-bg: var(--card-bg, #ffffff); --bs-table-color: var(--text-main, #1f2937);">
+                                <thead style="background: var(--bg-light, #f8fafc); border-bottom: 1px solid var(--card-border, #e5e7eb);">
                                     <tr>
                                         <th style="width: 20%">Tipe</th>
                                         <th style="width: 35%">Item</th>
@@ -76,10 +76,10 @@
                                         <th style="width: 5%"></th>
                                     </tr>
                                 </thead>
-                                <tbody id="itemsContainer" class="border-secondary">
+                                <tbody id="itemsContainer" style="border-color: var(--card-border, #e5e7eb);">
                                     <!-- Items will be added here via JS -->
                                 </tbody>
-                                <tfoot class="table-light border-top border-secondary">
+                                <tfoot style="background: var(--bg-light, #f8fafc); border-top: 1px solid var(--card-border, #e5e7eb);">
                                     <tr>
                                         <td colspan="3" class="text-end fw-bold">Subtotal</td>
                                         <td colspan="2" class="fw-bold text-warning fs-5" id="subtotalDisplay">Rp 0</td>
@@ -94,8 +94,8 @@
                 </div>
 
                 <!-- Payment Details -->
-                <div class="card border-0 shadow-sm bg-white text-dark">
-                    <div class="card-header bg-white text-dark py-3">
+                <div class="card border-0 shadow-sm" style="background: var(--card-bg, #ffffff); color: var(--text-main, #1f2937);">
+                    <div class="card-header py-3" style="background: var(--card-bg, #ffffff); color: var(--text-main, #1f2937); border-bottom: 1px solid var(--card-border, #e5e7eb);">
                         <h6 class="mb-0"><i class="bi bi-cash-stack me-2"></i>Pembayaran</h6>
                     </div>
                     <div class="card-body">
@@ -103,20 +103,24 @@
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-bold">Diskon (Rp)</label>
                                 <div class="input-group">
-                                    <span class="input-group-text bg-light text-dark border-secondary">Rp</span>
-                                    <input type="number" class="form-control bg-light text-dark border-secondary" name="discount" id="discountInput" value="{{ old('discount', 0) }}" min="0">
+                                    <span class="input-group-text" style="background: var(--bg-light, #f8fafc); color: var(--text-main, #1f2937); border-color: var(--card-border, #d1d5db);">Rp</span>
+                                    <input type="number" class="form-control" name="discount" style="background: var(--input-bg, #f8fafc); color: var(--text-main, #1f2937); border-color: var(--card-border, #d1d5db);" id="discountInput" value="{{ old('discount', 0) }}" min="0"
+                                        oninput="if(this.value < 0) this.value = 0;" 
+                                        onkeydown="return event.keyCode !== 69 && event.keyCode !== 189">
                                 </div>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-bold">Bayar Awal / DP (Rp)</label>
                                 <div class="input-group">
-                                    <span class="input-group-text bg-light text-dark border-secondary">Rp</span>
-                                    <input type="number" class="form-control bg-light text-dark border-secondary" name="paid" value="{{ old('paid', 0) }}" min="0">
+                                    <span class="input-group-text" style="background: var(--bg-light, #f8fafc); color: var(--text-main, #1f2937); border-color: var(--card-border, #d1d5db);">Rp</span>
+                                    <input type="number" class="form-control" name="paid" style="background: var(--input-bg, #f8fafc); color: var(--text-main, #1f2937); border-color: var(--card-border, #d1d5db);" value="{{ old('paid', 0) }}" min="0"
+                                        oninput="if(this.value < 0) this.value = 0;" 
+                                        onkeydown="return event.keyCode !== 69 && event.keyCode !== 189">
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="card-footer bg-light border-0 py-3 text-end">
+                    <div class="card-footer border-0 py-3 text-end" style="background: var(--bg-light, #f8fafc);">
                         <button type="submit" class="btn btn-primary btn-lg px-5">
                             <i class="bi bi-save me-2"></i>Simpan Transaksi
                         </button>
@@ -160,24 +164,28 @@ document.addEventListener('DOMContentLoaded', function() {
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td>
-                <select class="form-select form-select-sm item-type bg-light text-dark border-secondary" name="items[${index}][type]" required>
+                <select class="form-select form-select-sm item-type" name="items[${index}][type]" required style="background: var(--input-bg, #f8fafc); color: var(--text-main, #1f2937); border-color: var(--card-border, #d1d5db);">
                     <option value="unit_ps">Unit PS</option>
                     <option value="game">Game</option>
                     <option value="accessory">Aksesoris</option>
                 </select>
             </td>
             <td>
-                <select class="form-select form-select-sm item-select bg-light text-dark border-secondary" name="items[${index}][id]" required>
+                <select class="form-select form-select-sm item-select" name="items[${index}][id]" required style="background: var(--input-bg, #f8fafc); color: var(--text-main, #1f2937); border-color: var(--card-border, #d1d5db);">
                     <option value="">-- Pilih Item --</option>
                 </select>
             </td>
             <td>
-                <input type="number" class="form-control form-control-sm item-qty bg-light text-dark border-secondary" name="items[${index}][quantity]" value="1" min="1" required>
+                <input type="number" class="form-control form-control-sm item-qty" name="items[${index}][quantity]" value="1" min="1" required style="background: var(--input-bg, #f8fafc); color: var(--text-main, #1f2937); border-color: var(--card-border, #d1d5db);"
+                    oninput="if(this.value < 1) this.value = 1;" 
+                    onkeydown="return event.keyCode !== 69 && event.keyCode !== 189">
             </td>
             <td>
                 <div class="input-group input-group-sm">
-                    <span class="input-group-text bg-light text-dark border-secondary">Rp</span>
-                    <input type="number" class="form-control item-price bg-light text-dark border-secondary" name="items[${index}][price]" required>
+                    <span class="input-group-text" style="background: var(--bg-light, #f8fafc); color: var(--text-main, #1f2937); border-color: var(--card-border, #d1d5db);">Rp</span>
+                    <input type="number" class="form-control item-price" name="items[${index}][price]" required style="background: var(--input-bg, #f8fafc); color: var(--text-main, #1f2937); border-color: var(--card-border, #d1d5db);"
+                        oninput="if(this.value < 0) this.value = 0;" 
+                        onkeydown="return event.keyCode !== 69 && event.keyCode !== 189">
                 </div>
             </td>
             <td>

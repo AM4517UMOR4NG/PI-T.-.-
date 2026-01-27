@@ -31,9 +31,9 @@
                 <input type="email" class="form-control" name="email" value="{{ old('email') }}" required>
             </div>
             
-            <div class="mb-3">
-                <label class="form-label">Password</label>
-                <input type="password" class="form-control" name="password" required>
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle me-1"></i>
+                Password akan digenerate otomatis oleh sistem dan dikirimkan ke email staff.
             </div>
             
 

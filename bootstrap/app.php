@@ -16,6 +16,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'midtrans/notification',
         ]);
         
+        $middleware->append([
+            \App\Http\Middleware\SecurityHeadersMiddleware::class,
+        ]);
+
         $middleware->web(append: [
             \App\Http\Middleware\LocaleMiddleware::class,
         ]);
