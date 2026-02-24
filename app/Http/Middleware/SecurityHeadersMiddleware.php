@@ -37,7 +37,7 @@ class SecurityHeadersMiddleware
         $csp = "default-src 'self'; " .
                "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://code.jquery.com https://cdnjs.cloudflare.com https://www.googletagmanager.com; " .
                "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com https://cdnjs.cloudflare.com; " .
-               "img-src 'self' data: https://ui-avatars.com blob:; " .
+               "img-src 'self' data: blob: https:; " .
                "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; " .
                "connect-src 'self'; " .
                "frame-src 'self'; " .
