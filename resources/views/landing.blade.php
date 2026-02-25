@@ -1,6 +1,7 @@
 @extends('layouts.public')
 
 @section('content')
+   
     <header class="hero">
         <div class="hero-bg">
             <div class="hero-blob blob-1"></div>
